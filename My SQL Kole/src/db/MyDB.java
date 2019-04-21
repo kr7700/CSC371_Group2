@@ -4,7 +4,6 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -54,37 +53,13 @@ public class MyDB {
 		File createFile = new File("createTables.txt"); // has all creation statements
 		File insertFile = new File("insertTables.txt"); // has all insert statements
 		File tableNamesReverseOrderFile = new File("tableNamesReverseOrder.txt"); // has names of all tables (in reverse order from creation)
-		Scanner sc = new Scanner(createFile);
-		String line;
 		
 		// creating all tables
-		int tableCount = 1;
-		while(sc.hasNextLine()) {
-			line = sc.nextLine();
-			System.out.println((tableCount++) + " : " + line);
-			
-			createStatementPK(line);
-		}
-		
+		createAllTables(createFile);
 		// inserting into all tables
-		sc = new Scanner(insertFile);
-		int insertCount = 1;
-		while(sc.hasNextLine()) {
-			line = sc.nextLine();
-			System.out.println((insertCount++) + " : " + line);
-			
-			insertStatement(line);
-		}
-		
-//		// dropping all tables starting from the most recent table made (reverse order from creation)
-//		sc = new Scanner(tableNamesReverseOrderFile);
-//		int dropCount = 1;
-//		while(sc.hasNextLine()) {
-//			line = sc.nextLine();
-//			System.out.println((dropCount++) + " : " + line);
-//			
-//			dropStatement(line);
-//		}
+		insertToTables(insertFile);
+		// dropping all tables starting from the most recent table made (reverse order from creation)
+		dropAllTables(tableNamesReverseOrderFile);
 	}
 
 	/**
@@ -121,10 +96,65 @@ public class MyDB {
 	}
 	
 	/**
+	 * Create all the tables in the DB.
+	 * @param file the file containing all the create statements
+	 * @throws Exception
+	 */
+	public void createAllTables(File file) throws Exception {
+		Scanner sc = new Scanner(file);
+		String line;
+		int tableCount = 1;
+		while(sc.hasNextLine()) {
+			line = sc.nextLine();
+			System.out.println((tableCount++) + " : " + line);
+			
+			createStatement(line);
+		}
+		sc.close();
+	}
+	
+	/**
+	 * Insert into all tables in the DB.
+	 * @param file the file containing all the insert statements
+	 * @throws Exception
+	 */
+	public void insertToTables(File file) throws Exception {
+		Scanner sc = new Scanner(file);
+		String line;
+		int insertCount = 1;
+		while(sc.hasNextLine()) {
+			line = sc.nextLine();
+			System.out.println((insertCount++) + " : " + line);
+			
+			insertStatement(line);
+		}
+		sc.close();
+	}
+	
+	/**
+	 * Drops all tables in the DB in reverse order, starting from the last one made
+	 * and ending with the first one created.
+	 * @param file the file containing all the table names
+	 * @throws Exception
+	 */
+	public void dropAllTables(File file) throws Exception {
+		Scanner sc = new Scanner(file);
+		String line;
+		int dropCount = 1;
+		while(sc.hasNextLine()) {
+			line = sc.nextLine();
+			System.out.println((dropCount++) + " : " + line);
+			
+			dropStatement(line);
+		}
+		sc.close();
+	}
+	
+	/**
 	 * Creates a table with a primary key. To execute an SQL statement that is not a
 	 * SELECT statement. WITH PRIMARY KEY.
 	 */
-	public void createStatementPK(String line) throws Exception {
+	public void createStatement(String line) throws Exception {
 		String insertData = new String(line);
 		PreparedStatement stmt = m_dbConn.prepareStatement(insertData);
 		int rowsAdded = stmt.executeUpdate();
