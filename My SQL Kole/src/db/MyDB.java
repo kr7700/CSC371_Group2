@@ -54,12 +54,13 @@ public class MyDB {
 		File insertFile = new File("insertTables.txt"); // has all insert statements
 		File tableNamesReverseOrderFile = new File("tableNamesReverseOrder.txt"); // has names of all tables (in reverse order from creation)
 		
+		dropAllTables(tableNamesReverseOrderFile);
 		// creating all tables
 		createAllTables(createFile);
 		// inserting into all tables
 		insertToTables(insertFile);
 		// dropping all tables starting from the most recent table made (reverse order from creation)
-		dropAllTables(tableNamesReverseOrderFile);
+		//dropAllTables(tableNamesReverseOrderFile);
 	}
 
 	/**
