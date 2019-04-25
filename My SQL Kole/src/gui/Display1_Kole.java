@@ -31,14 +31,16 @@ public class Display1_Kole extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea_BuildingDescription;
     // End of variables declaration         
     
+    static Display1DBStatements db = new Display1DBStatements();
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-    	Display1DBStatements db = new Display1DBStatements();
     	
     	try {
 			db.selectPlayerName();
+			db.selectMoney();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -114,14 +116,14 @@ public class Display1_Kole extends javax.swing.JFrame {
         jLabel_CurrencyAmt.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         jLabel_CurrencyAmt.setForeground(new java.awt.Color(249, 242, 93));
         jLabel_CurrencyAmt.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel_CurrencyAmt.setText("[Currency Amt]");
+        jLabel_CurrencyAmt.setText("" + db.getMoney());
         jPanel2.add(jLabel_CurrencyAmt); // add the label to the panel
         jLabel_CurrencyAmt.setBounds(280, 550, 210, 30);
 
         // set the specifications for the Building Description jlabel
         jLabel_BuildingDescrip.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         jLabel_BuildingDescrip.setForeground(new java.awt.Color(255, 253, 208));
-        jLabel_BuildingDescrip.setText("[Player Name]");
+        jLabel_BuildingDescrip.setText(db.getPlayerName());
         jPanel2.add(jLabel_BuildingDescrip); // add the label to the panel
         jLabel_BuildingDescrip.setBounds(90, 550, 190, 30);
 
@@ -247,7 +249,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         jLabel_BuildingName.setText("Factory");
         jTextArea_BuildingDescription.setText("Factories can be used to turn mined resources from Mines"
         		+ " into items called baubles to sell for money.");
-        jLabel_CurrencyAmt.setText("Wallet - 10000");
+        jLabel_CurrencyAmt.setText(db.getMoney() + " > " + (db.getMoney() - 10000));
         // set variables for current building name and amount
     }                                              
 
@@ -262,7 +264,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         jTextArea_BuildingDescription.setText("Mines have the ability to gather raw resources the player"
         		+ " may use to build ships at a ShipYard, items to sell at a Factory, or research technology"
         		+ " at a Research Center.");
-        jLabel_CurrencyAmt.setText("Wallet - 500");
+        jLabel_CurrencyAmt.setText(db.getMoney() + " > " + (db.getMoney() - 500));
         // set variables for current building name and amount
     }                                              
 
@@ -275,7 +277,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         // TODO add your handling code here:
         jLabel_BuildingName.setText("Research Center");
         jTextArea_BuildingDescription.setText("Research Centers use mined resources to improve existing technologies.");
-        jLabel_CurrencyAmt.setText("Wallet - 45000");
+        jLabel_CurrencyAmt.setText(db.getMoney() + " > " + (db.getMoney() - 45000));
         // set variables for current building name and amount
     }                                               
 
@@ -288,7 +290,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         // TODO add your handling code here:
         jLabel_BuildingName.setText("ShipYard");
         jTextArea_BuildingDescription.setText("ShipYards use mined resources to build additional ships.");
-        jLabel_CurrencyAmt.setText("Wallet - 1500");
+        jLabel_CurrencyAmt.setText(db.getMoney() + " > " + (db.getMoney() - 1500));
         // set variables for current building name and amount
     }                                               
 
