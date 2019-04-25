@@ -39,6 +39,14 @@ public class MyDB {
 		MyDB db = new MyDB();
 		//db.setup();
 	}
+	
+	/**
+	 * Gets the connection to the db.
+	 * @return connection to the db
+	 */
+	public Connection getConn() {
+		return m_dbConn;
+	}
 
 	/**
 	 * Constructor. This activated the DB, connects to it, then goes through and
