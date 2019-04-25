@@ -1,5 +1,9 @@
 package gui;
 
+import java.sql.SQLException;
+
+import db.Display1DBStatements;
+
 /**
  * Displays the amount of money the player has, costs for each type of building
  * (Factory, Mine, Research Center, and ShipYard), and allows the player to buy
@@ -31,6 +35,14 @@ public class Display1_Kole extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+    	Display1DBStatements db = new Display1DBStatements();
+    	
+    	try {
+			db.selectPlayerName();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	
         /* Set the Nimbus look and feel */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
