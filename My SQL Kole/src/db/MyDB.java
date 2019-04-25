@@ -50,6 +50,10 @@ public class MyDB {
 		activateJDBC(); // activate the DB
 		connectDB(); // connect to the DB
 		
+		//setup();
+	}
+	
+	public void setup() throws Exception {
 		File createFile = new File("createTables.txt"); // has all creation statements
 		File insertFile = new File("insertTables.txt"); // has all insert statements
 		File tableNamesReverseOrderFile = new File("tableNamesReverseOrder.txt"); // has names of all tables (in reverse order from creation)
