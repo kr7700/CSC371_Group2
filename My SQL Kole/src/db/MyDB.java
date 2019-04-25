@@ -37,6 +37,7 @@ public class MyDB {
 	public static void main(String[] args) throws Exception {
 		@SuppressWarnings("unused")
 		MyDB db = new MyDB();
+		//db.setup();
 	}
 
 	/**
@@ -49,8 +50,6 @@ public class MyDB {
 	public MyDB() throws Exception {
 		activateJDBC(); // activate the DB
 		connectDB(); // connect to the DB
-		
-		//setup();
 	}
 	
 	public void setup() throws Exception {
