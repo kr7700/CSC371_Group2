@@ -19,6 +19,7 @@ public class Menu extends javax.swing.JFrame {
     private javax.swing.JButton jButton_Display1;
     private javax.swing.JButton jButton_Display2;
     private javax.swing.JButton jButton_Display3;
+    private javax.swing.JButton jButton_Logout;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration
@@ -79,10 +80,12 @@ public class Menu extends javax.swing.JFrame {
         jButton_Display1 = new javax.swing.JButton();
         jButton_Display2 = new javax.swing.JButton();
         jButton_Display3 = new javax.swing.JButton();
+        jButton_Logout = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(750, 500));
+        //setPreferredSize(new java.awt.Dimension(750, 500));
+        setPreferredSize(new java.awt.Dimension(765, 538));
 
         jPanel1.setBackground(new java.awt.Color(0, 2, 40));
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 10));
@@ -127,6 +130,18 @@ public class Menu extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 253, 208));
         jLabel1.setText("Welcome, " + username);
+        
+        jButton_Logout.setBackground(new java.awt.Color(255, 255, 255));
+        jButton_Logout.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 11)); // NOI18N
+        jButton_Logout.setText("Logout");
+        jButton_Logout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_LogoutActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton_Logout);
+//        jButton_Login.setBounds(330, 180, 80, 23);
+        jButton_Logout.setBounds(650, 450, 80, 23);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -181,6 +196,18 @@ public class Menu extends javax.swing.JFrame {
         pack();
     }// </editor-fold>                        
 
+    /**
+     * Disposes the current window after opening a new login screen.
+     * @param evt
+     */
+    @SuppressWarnings("static-access")
+	private void jButton_LogoutActionPerformed(java.awt.event.ActionEvent evt) {                                                     
+    	// TODO add your handling code here:
+    	Login login = new Login();
+    	login.runner();
+    	this.dispose();
+    }    
+    
 	private void jButton_DirectAccessActionPerformed(java.awt.event.ActionEvent evt) {                                                     
     	// TODO add your handling code here:
     }                                                    
