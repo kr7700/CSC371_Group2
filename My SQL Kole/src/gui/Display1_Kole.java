@@ -417,31 +417,38 @@ public class Display1_Kole extends javax.swing.JFrame {
      * @param evt on button press
      */
     private void jButton_PurchaseActionPerformed(java.awt.event.ActionEvent evt) {                                                 
-        // subtract purchased amount from wallet and adds new player-assigned building to be placed
-    	if(statement != null) {
-			try {
-				d1db.updateMoney(d1db.getName(), money);
-			} catch (SQLException e) {
-				e.printStackTrace();
+        
+    	// make sure the player can actually afford the building being purchased
+    	if(money >= 0) {
+			// subtract purchased amount from wallet and adds new player-assigned building
+			// to be placed
+			if (statement != null) {
+				try {
+					d1db.updateMoney(d1db.getName(), money);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+				// update a table dependant on which building was selected
+				try {
+					d1db.insert(statement, money);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
-			// update a table dependant on which building was selected
-			try {
-				d1db.insert(statement, money);
-			} catch (Exception e) {
-				e.printStackTrace();
+			// allows for repeated clicking on the purchase button
+			if (deduction == factoryCost) {
+				jRadioButton_FActionPerformed(evt);
+			} else if (deduction == mineCost) {
+				jRadioButton_MActionPerformed(evt);
+			} else if (deduction == researchCenterCost) {
+				jRadioButton_RCActionPerformed(evt);
+			} else if (deduction == shipYardCost) {
+				jRadioButton_SYActionPerformed(evt);
 			}
-    	}
-    	
-    	// allows for repeated clicking on the purchase button
-    	if(deduction == factoryCost) {
-    		jRadioButton_FActionPerformed(evt);
-    	} else if(deduction == mineCost) {
-    		jRadioButton_MActionPerformed(evt);
-    	} else if(deduction == researchCenterCost) {
-    		jRadioButton_RCActionPerformed(evt);
-    	} else if(deduction == shipYardCost) {
-    		jRadioButton_SYActionPerformed(evt);
+    	} else {
+    		System.out.println("Not enough currency.");
     	}
         //this.dispose();
     }                                                
