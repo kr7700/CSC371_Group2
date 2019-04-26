@@ -22,6 +22,10 @@ public class Display1_Kole extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel_BuildingDescrip;
     private javax.swing.JLabel jLabel_BuildingName;
     private javax.swing.JLabel jLabel_CurrencyAmt;
+    private javax.swing.JLabel jLabel_FCost;
+    private javax.swing.JLabel jLabel_MCost;
+    private javax.swing.JLabel jLabel_RCCost;
+    private javax.swing.JLabel jLabel_SYCost;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JRadioButton jRadioButton_F;
     private javax.swing.JRadioButton jRadioButton_M;
@@ -31,7 +35,17 @@ public class Display1_Kole extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea_BuildingDescription;
     // End of variables declaration         
     
-    static Display1DBStatements db = new Display1DBStatements();
+    static String playerName = "guy";
+    static Display1DBStatements d1db = new Display1DBStatements();
+    
+    private int money = 0;
+    private String statement = "";
+    private String id = "000";
+    
+    static int factoryCost;
+    static int mineCost;
+    static int researchCenterCost;
+    static int shipYardCost;
     
     /**
      * @param args the command line arguments
@@ -39,8 +53,13 @@ public class Display1_Kole extends javax.swing.JFrame {
     public static void main(String args[]) {
     	
     	try {
-			db.selectPlayerName();
-			db.selectMoney();
+			//db.selectPlayerName();
+			d1db.selectMoney(playerName);
+			factoryCost = d1db.getBuildingCost("FACTORY");
+			mineCost = d1db.getBuildingCost("MINE");
+			researchCenterCost = d1db.getBuildingCost("RESEARCH_CENTER");
+			shipYardCost = d1db.getBuildingCost("SHIPYARD");
+			//d1db.updateMoney(playerName, 400000);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -66,7 +85,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Display1_Kole().setVisible(true);
+                new Display1_Kole("guy").setVisible(true);
             }
         });
     }
@@ -74,7 +93,8 @@ public class Display1_Kole extends javax.swing.JFrame {
     /**
      * Creates new form DisplayFrame
      */
-    public Display1_Kole() {
+    public Display1_Kole(String playerName) {
+    	this.playerName = playerName;
         initComponents();
     }
 
@@ -90,6 +110,10 @@ public class Display1_Kole extends javax.swing.JFrame {
         jLabel_BuildingName = new javax.swing.JLabel(); // label for the building name above the description
         jLabel_CurrencyAmt = new javax.swing.JLabel(); // label for the currency amount the player currently has
         jLabel_BuildingDescrip = new javax.swing.JLabel(); // label for the building description itself
+        jLabel_FCost = new javax.swing.JLabel();
+        jLabel_MCost = new javax.swing.JLabel();
+        jLabel_RCCost = new javax.swing.JLabel();
+        jLabel_SYCost = new javax.swing.JLabel();
         jRadioButton_F = new javax.swing.JRadioButton(); // select button for Factory
         jRadioButton_M = new javax.swing.JRadioButton(); // select button for Mine
         jRadioButton_RC = new javax.swing.JRadioButton(); // select button for Research Center
@@ -116,17 +140,49 @@ public class Display1_Kole extends javax.swing.JFrame {
         jLabel_CurrencyAmt.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         jLabel_CurrencyAmt.setForeground(new java.awt.Color(249, 242, 93));
         jLabel_CurrencyAmt.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel_CurrencyAmt.setText("" + db.getMoney());
+        jLabel_CurrencyAmt.setText("" + d1db.getMoney());
         jPanel2.add(jLabel_CurrencyAmt); // add the label to the panel
         jLabel_CurrencyAmt.setBounds(280, 550, 210, 30);
 
         // set the specifications for the Building Description jlabel
         jLabel_BuildingDescrip.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         jLabel_BuildingDescrip.setForeground(new java.awt.Color(255, 253, 208));
-        jLabel_BuildingDescrip.setText(db.getPlayerName());
+        jLabel_BuildingDescrip.setText(playerName);
         jPanel2.add(jLabel_BuildingDescrip); // add the label to the panel
         jLabel_BuildingDescrip.setBounds(90, 550, 190, 30);
 
+        // set the specifications for the Factory Cost jlabel
+        jLabel_FCost.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
+        jLabel_FCost.setForeground(new java.awt.Color(249, 242, 93));
+        jLabel_FCost.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel_FCost.setText("" + factoryCost);
+        jPanel2.add(jLabel_FCost); // add the label to the panel
+        jLabel_FCost.setBounds(230, 120, 210, 20);
+
+        // set the specifications for the Mine Cost jlabel
+        jLabel_MCost.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
+        jLabel_MCost.setForeground(new java.awt.Color(249, 242, 93));
+        jLabel_MCost.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel_MCost.setText("" + mineCost);
+        jPanel2.add(jLabel_MCost); // add the label to the panel
+        jLabel_MCost.setBounds(230, 240, 210, 20);
+
+        // set the specifications for the Research Center Cost jlabel
+        jLabel_RCCost.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
+        jLabel_RCCost.setForeground(new java.awt.Color(249, 242, 93));
+        jLabel_RCCost.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel_RCCost.setText("" + researchCenterCost);
+        jPanel2.add(jLabel_RCCost); // add the label to the panel
+        jLabel_RCCost.setBounds(230, 360, 210, 20);
+
+        // set the specifications for the ShipYard Cost jlabel
+        jLabel_SYCost.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
+        jLabel_SYCost.setForeground(new java.awt.Color(249, 242, 93));
+        jLabel_SYCost.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel_SYCost.setText("" + shipYardCost);
+        jPanel2.add(jLabel_SYCost); // add the label to the panel
+        jLabel_SYCost.setBounds(230, 480, 210, 20);
+        
         // set the specifications for the Factory jradiobutton
         jRadioButton_F.setBackground(new java.awt.Color(0, 2, 40));
         buttonGroup.add(jRadioButton_F); // add the button to a button group to link with the other buttons
@@ -249,8 +305,16 @@ public class Display1_Kole extends javax.swing.JFrame {
         jLabel_BuildingName.setText("Factory");
         jTextArea_BuildingDescription.setText("Factories can be used to turn mined resources from Mines"
         		+ " into items called baubles to sell for money.");
-        jLabel_CurrencyAmt.setText(db.getMoney() + " > " + (db.getMoney() - 10000));
+        jLabel_CurrencyAmt.setText(d1db.getMoney() + " > " + (d1db.getMoney() - factoryCost));
         // set variables for current building name and amount
+        money = d1db.getMoney() - factoryCost;
+        try {
+			id = d1db.generateID("FACTORY");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+        statement = "INSERT INTO FACTORY(ID, Cost, Maintenance_Cost, Bauble_Alloc, P_ID) "
+        		+ "VALUES (" + id + ", " + factoryCost + ", 500, 0, '16x40')";
     }                                              
 
     /**
@@ -264,8 +328,16 @@ public class Display1_Kole extends javax.swing.JFrame {
         jTextArea_BuildingDescription.setText("Mines have the ability to gather raw resources the player"
         		+ " may use to build ships at a ShipYard, items to sell at a Factory, or research technology"
         		+ " at a Research Center.");
-        jLabel_CurrencyAmt.setText(db.getMoney() + " > " + (db.getMoney() - 500));
+        jLabel_CurrencyAmt.setText(d1db.getMoney() + " > " + (d1db.getMoney() - mineCost));
         // set variables for current building name and amount
+        money = d1db.getMoney() - mineCost;
+        try {
+			id = d1db.generateID("MINE");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+        statement = "INSERT INTO MINE(ID, Cost, Maintenance_Cost, P_ID) "
+        		+ "VALUES (" + id + ", " + mineCost + ", 10, '16x40')";
     }                                              
 
     /**
@@ -277,8 +349,16 @@ public class Display1_Kole extends javax.swing.JFrame {
         // TODO add your handling code here:
         jLabel_BuildingName.setText("Research Center");
         jTextArea_BuildingDescription.setText("Research Centers use mined resources to improve existing technologies.");
-        jLabel_CurrencyAmt.setText(db.getMoney() + " > " + (db.getMoney() - 45000));
+        jLabel_CurrencyAmt.setText(d1db.getMoney() + " > " + (d1db.getMoney() - researchCenterCost));
         // set variables for current building name and amount
+        money = d1db.getMoney() - researchCenterCost;
+        try {
+			id = d1db.generateID("RESEARCH_CENTER");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+        statement = "INSERT INTO RESEARCH(Engine_Level, Mining_Level, Factory_Level, Hull_Level, Weapons_Level, RC_ID)"
+        		+ "VALUES (32, 64, 41, 31, 22, " + id + ")";
     }                                               
 
     /**
@@ -290,8 +370,9 @@ public class Display1_Kole extends javax.swing.JFrame {
         // TODO add your handling code here:
         jLabel_BuildingName.setText("ShipYard");
         jTextArea_BuildingDescription.setText("ShipYards use mined resources to build additional ships.");
-        jLabel_CurrencyAmt.setText(db.getMoney() + " > " + (db.getMoney() - 1500));
+        jLabel_CurrencyAmt.setText(d1db.getMoney() + " > " + (d1db.getMoney() - shipYardCost));
         // set variables for current building name and amount
+        money = d1db.getMoney() - shipYardCost;
     }                                               
 
     /**
@@ -303,6 +384,19 @@ public class Display1_Kole extends javax.swing.JFrame {
         // TODO add your handling code here:
         // subtract purchased amount from wallet and add building
         // to player's inventory
+    	try {
+			d1db.updateMoney(playerName, money);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	
+    	// update a table dependant on which building was selected
+    	try {
+			d1db.insert(statement);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
         this.dispose();
     }                                                
 
