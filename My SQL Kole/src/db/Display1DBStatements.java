@@ -12,11 +12,13 @@ public class Display1DBStatements {
 	
 	MyDB db;
 	private int money;
+	private String name;
 	
 	/**
 	 * Constructor for the DB statements used for Display1
 	 */
-	public Display1DBStatements() {
+	public Display1DBStatements(String playerName) {
+		name = playerName;
 		db = null;
 		try {
 			db = new MyDB();
@@ -31,6 +33,14 @@ public class Display1DBStatements {
 	 */
 	public int getMoney() {
 		return money;
+	}
+	
+	/**
+	 * Gets the player name
+	 * @return the name of the player
+	 */
+	public String getName() {
+		return name;
 	}
 	
 	/**

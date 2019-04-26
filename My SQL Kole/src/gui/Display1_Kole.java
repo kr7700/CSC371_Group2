@@ -35,9 +35,7 @@ public class Display1_Kole extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea_BuildingDescription;
     // End of variables declaration         
     
-    // don't have a login to grab a name, so we're just gonna pick on "guy"
-    static String playerName = "guy";
-    static Display1DBStatements d1db = new Display1DBStatements();
+    static Display1DBStatements d1db;
     
     // keeping track of variables as they change
     // used for action listeners
@@ -53,27 +51,16 @@ public class Display1_Kole extends javax.swing.JFrame {
     static int researchCenterCost;
     static int shipYardCost;
     
-    public static void main(String[] args) {
-    	runner();
+    @SuppressWarnings("static-access")
+	public static void main(String[] args) {
+    	Display1_Kole d1 = new Display1_Kole("guy"); // don't have a login to grab a name, so we're just gonna pick on "guy"
+    	d1.runner();
     }
     
     /**
      * @param args the command line arguments
      */
     public static void runner() {
-    	
-    	try {
-			//db.selectPlayerName();
-			d1db.selectMoney(playerName);
-			factoryCost = d1db.getBuildingCost("FACTORY");
-			mineCost = d1db.getBuildingCost("MINE");
-			researchCenterCost = d1db.getBuildingCost("RESEARCH_CENTER");
-			shipYardCost = d1db.getBuildingCost("SHIPYARD");
-			//d1db.updateMoney(playerName, 900000); // sets our player's money very high for testing
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-    	
         /* Set the Nimbus look and feel */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -95,7 +82,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Display1_Kole(playerName).setVisible(true);
+                new Display1_Kole(d1db.getName()).setVisible(true);
             }
         });
     }
@@ -106,7 +93,21 @@ public class Display1_Kole extends javax.swing.JFrame {
      * what creates the display.
      */
     public Display1_Kole(String playerName) {
-    	//this.playerName = playerName;
+    	d1db = new Display1DBStatements(playerName);
+    	
+    	try {
+			//db.selectPlayerName();
+			d1db.selectMoney(d1db.getName());
+			System.out.println("Name: " + d1db.getName() + " Money :" + d1db.getMoney());
+			factoryCost = d1db.getBuildingCost("FACTORY");
+			mineCost = d1db.getBuildingCost("MINE");
+			researchCenterCost = d1db.getBuildingCost("RESEARCH_CENTER");
+			shipYardCost = d1db.getBuildingCost("SHIPYARD");
+			//d1db.updateMoney(playerName, 900000); // sets our player's money very high for testing
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	
         initComponents();
     }
 
@@ -157,7 +158,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         // set the specifications for the Building Description jlabel
         jLabel_BuildingDescrip.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         jLabel_BuildingDescrip.setForeground(new java.awt.Color(255, 253, 208));
-        jLabel_BuildingDescrip.setText(playerName);
+        jLabel_BuildingDescrip.setText(d1db.getName());
         jPanel2.add(jLabel_BuildingDescrip); // add the label to the panel
         jLabel_BuildingDescrip.setBounds(90, 550, 190, 30);
 
@@ -322,7 +323,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         money = d1db.getMoney() - deduction; // calculate the new balance after deduction
         try {
 			buildingID = d1db.generateID("FACTORY"); // generate a new ID for the factory
-			planetID = d1db.getPlanetID("FACTORY", playerName); // get the planet ID owned by the player to apply to the building
+			planetID = d1db.getPlanetID("FACTORY", d1db.getName()); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -349,7 +350,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         money = d1db.getMoney() - deduction; // calculate the new balance after deduction
         try {
 			buildingID = d1db.generateID("MINE"); // generate a new ID for the mine
-			planetID = d1db.getPlanetID("MINE", playerName); // get the planet ID owned by the player to apply to the building
+			planetID = d1db.getPlanetID("MINE", d1db.getName()); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -374,7 +375,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         money = d1db.getMoney() - deduction; // calculate the new balance after deduction
         try {
 			buildingID = d1db.generateID("RESEARCH_CENTER"); // generate a new ID for the research center
-			planetID = d1db.getPlanetID("RESEARCH_CENTER", playerName); // get the planet ID owned by the player to apply to the building
+			planetID = d1db.getPlanetID("RESEARCH_CENTER", d1db.getName()); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -399,7 +400,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         money = d1db.getMoney() - deduction; // calculate the new balance after deduction
         try {
 			buildingID = d1db.generateID("SHIPYARD"); // generate a new ID for the shipyard
-			planetID = d1db.getPlanetID("SHIPYARD", playerName); // get the planet ID owned by the player to apply to the building
+			planetID = d1db.getPlanetID("SHIPYARD", d1db.getName()); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -418,7 +419,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         // subtract purchased amount from wallet and adds new player-assigned building to be placed
     	if(statement != null) {
 			try {
-				d1db.updateMoney(playerName, money);
+				d1db.updateMoney(d1db.getName(), money);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
