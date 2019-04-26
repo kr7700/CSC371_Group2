@@ -85,8 +85,8 @@ public class Display1DBStatements {
 	 * Selects the planet ID of a planet owned by a certain player.
 	 * @throws SQLException
 	 */
-	public String getPlanetID(String buildingName, String playerName) throws SQLException {
-		String selectData1 = new String("select P_ID from " + buildingName + " where (select ID from PLANET where P_Name = ?)");
+	public String getPlanetID(String playerName) throws SQLException {
+		String selectData1 = new String("select ID from PLANET where P_Name = ?");
 		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
 		stmt1.setString(1, playerName);
 		
@@ -95,8 +95,9 @@ public class Display1DBStatements {
 		// returns the planet id
 		String pID = "00x00";
 		if(rs1.next()) {
-			pID = rs1.getString("P_ID");
-			System.out.println(buildingName + " P_ID: " + pID);
+			pID = rs1.getString("ID");
+//			System.out.println(buildingName + " P_ID: " + pID);
+			System.out.println("Planet ID: " + pID);
 		}
 		return pID;
 	}

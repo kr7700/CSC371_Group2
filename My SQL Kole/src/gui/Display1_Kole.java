@@ -324,7 +324,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         money = d1db.getMoney() - deduction; // calculate the new balance after deduction
         try {
 			buildingID = d1db.generateID("FACTORY"); // generate a new ID for the factory
-			planetID = d1db.getPlanetID("FACTORY", d1db.getName()); // get the planet ID owned by the player to apply to the building
+			planetID = d1db.getPlanetID(d1db.getName()); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -351,7 +351,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         money = d1db.getMoney() - deduction; // calculate the new balance after deduction
         try {
 			buildingID = d1db.generateID("MINE"); // generate a new ID for the mine
-			planetID = d1db.getPlanetID("MINE", d1db.getName()); // get the planet ID owned by the player to apply to the building
+			planetID = d1db.getPlanetID(d1db.getName()); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -376,7 +376,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         money = d1db.getMoney() - deduction; // calculate the new balance after deduction
         try {
 			buildingID = d1db.generateID("RESEARCH_CENTER"); // generate a new ID for the research center
-			planetID = d1db.getPlanetID("RESEARCH_CENTER", d1db.getName()); // get the planet ID owned by the player to apply to the building
+			planetID = d1db.getPlanetID(d1db.getName()); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -401,7 +401,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         money = d1db.getMoney() - deduction; // calculate the new balance after deduction
         try {
 			buildingID = d1db.generateID("SHIPYARD"); // generate a new ID for the shipyard
-			planetID = d1db.getPlanetID("SHIPYARD", d1db.getName()); // get the planet ID owned by the player to apply to the building
+			planetID = d1db.getPlanetID(d1db.getName()); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
