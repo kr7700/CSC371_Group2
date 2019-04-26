@@ -135,7 +135,8 @@ public class Display1_Kole extends javax.swing.JFrame {
         jTextArea_BuildingDescription = new javax.swing.JTextArea(); // the text area for the building description
         jLabel2 = new javax.swing.JLabel(); // this holds the background image
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE); // jframe will exit on close
+        //setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE); // jframe will exit on close
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE); // jframe will dispose on close
         setPreferredSize(new java.awt.Dimension(1065, 785)); // sets the prefered size for the jframe window
 
         jPanel2.setLayout(null); // lets me layer buttons, labels, etc on top of each other without intrusion
