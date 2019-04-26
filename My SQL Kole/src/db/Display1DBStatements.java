@@ -1,17 +1,21 @@
 package db;
 
-import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Scanner;
 
+/**
+ * A class to house all the statements utilized for display 1.
+ * @author Jacob Kole
+ */
 public class Display1DBStatements {
 	
 	MyDB db;
-	private String playerName;
 	private int money;
 	
+	/**
+	 * Constructor for the DB statements used for Display1
+	 */
 	public Display1DBStatements() {
 		db = null;
 		try {
@@ -19,69 +23,28 @@ public class Display1DBStatements {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		if(db == null) {
-    		return;
-    	}
 	}
 	
-	public String getPlayerName() {
-		return playerName;
-	}
-	
+	/**
+	 * Gets the money variable
+	 * @return amount of money the player has
+	 */
 	public int getMoney() {
 		return money;
 	}
 	
 	/**
-	 * Selects from the table and prints out the result. To execute an SQL statement
-	 * that is a SELECT statement.
-	 * 
+	 * Grabs how much money the player has using a procedure.
 	 * @throws SQLException
 	 */
-	public void selectPlayerName() throws SQLException {
-		String selectData1 = new String("SELECT Name FROM PLAYER");
+	public void selectMoney(String playerName) throws SQLException {
+		String selectData1 = new String("call selectMoney(?)");
 		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
+		stmt1.setString(1, playerName);
 		
 		ResultSet rs1 = stmt1.executeQuery();
-
-//		while (rs1.next()) {
-//			// You can access values from a ResultSet either by column number - not advised:
-////			String data = rs1.getString(1);
-////			System.out.print(data + " : ");
-//			// Or by column name - advised:
-//			String data = rs1.getString("Name");
-//			System.out.println(data);
-//		}
 		
-		if(rs1.next()) {
-			String data = rs1.getString("Name");
-			playerName = data;
-			System.out.println(playerName);
-		}
-	}
-	
-	/**
-	 * Selects from the table and prints out the result. To execute an SQL statement
-	 * that is a SELECT statement.
-	 * 
-	 * @throws SQLException
-	 */
-	public void selectMoney() throws SQLException {
-		String selectData1 = new String("SELECT Money FROM PLAYER");
-		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
-		
-		ResultSet rs1 = stmt1.executeQuery();
-
-//		while (rs1.next()) {
-//			// You can access values from a ResultSet either by column number - not advised:
-////			String data = rs1.getString(1);
-////			System.out.print(data + " : ");
-//			// Or by column name - advised:
-//			String data = rs1.getString("Name");
-//			System.out.println(data);
-//		}
-		
+		// stores the amount of money into a variable
 		if(rs1.next()) {
 			int data = rs1.getInt("Money");
 			money = data;
@@ -90,25 +53,93 @@ public class Display1DBStatements {
 	}
 	
 	/**
-	 * Inserts to the table. To execute an SQL statement that is not a SELECT
-	 * statement. WITH PRIMARY KEY.
+	 * Selects the cost of a given building.
+	 * @throws SQLException
 	 */
-	public void insertStatementLoop() throws Exception {
-		// Using a PreparedStatement to insert a value (best option when providing
-		// values
-		// from variables).
-		// Use place holders '?' to mark where I am going to provide the data.
-		String insertData = new String("INSERT INTO TEST_KOLE VALUES (?,?,?,?,?)");
-		PreparedStatement stmt = db.getConn().prepareStatement(insertData);
+	public int getBuildingCost(String buildingName) throws SQLException {
+		String selectData1 = new String("select Cost from " + buildingName);
+		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
 		
-//		stmt.setInt(1, i);
-//		stmt.setInt(2, i + 1);
-//		stmt.setString(3, "a" + i);
-//		stmt.setString(4, "a" + (i + 1));
-//		stmt.setDouble(5, (double) i);
-		// When I need to set a primitive type as null.
-		// stmt2.setNull(2, java.sql.Types.INTEGER);
+		ResultSet rs1 = stmt1.executeQuery();
 		
+		// returns the cost of the building
+		int cost = 0;
+		if(rs1.next()) {
+			cost = rs1.getInt("Cost");
+			System.out.println(buildingName + " Cost: " + cost);
+		}
+		return cost;
+	}
+	
+	/**
+	 * Selects the planet ID of a planet owned by a certain player.
+	 * @throws SQLException
+	 */
+	public String getPlanetID(String buildingName, String playerName) throws SQLException {
+		String selectData1 = new String("select P_ID from " + buildingName + " where (select ID from PLANET where P_Name = ?)");
+		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
+		stmt1.setString(1, playerName);
+		
+		ResultSet rs1 = stmt1.executeQuery();
+		
+		// returns the planet id
+		String pID = "00x00";
+		if(rs1.next()) {
+			pID = rs1.getString("P_ID");
+			System.out.println(buildingName + " P_ID: " + pID);
+		}
+		return pID;
+	}
+	
+	/**
+	 * Grabs the highest ID in a given building's table and generates
+	 * the next ID up from it.
+	 * @throws SQLException
+	 */
+	public String generateID(String buildingName) throws SQLException {
+		String selectData1 = new String("select MAX(ID) from " + buildingName);
+		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
+		
+		String newID = "000";
+		ResultSet rs1 = stmt1.executeQuery();
+		
+		// returns the new generated id after grabbing
+		// the last added id and incrementing it
+		if(rs1.next()) {
+			newID = rs1.getString("MAX(ID)");
+			int lastAddedID = Integer.parseInt(newID);
+			newID = "" + lastAddedID;
+			newID = String.format("%03d", (lastAddedID + 1));
+			
+			System.out.println("Last Added ID: " + lastAddedID + " -> Generated ID: " + newID);
+		}
+		
+		return newID;
+	}
+	
+	/**
+	 * Updates a given amount of money for a given player.
+	 * @throws SQLException
+	 */
+	public void updateMoney(String playerName, int newAmount) throws SQLException {
+		String selectData1 = new String("update PLAYER set Money = ? where Name = ?");
+		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
+		stmt1.setInt(1, newAmount);
+		stmt1.setString(2, playerName);
+		
+		// updates the money
+		int added = stmt1.executeUpdate();
+		if(added == 1) {
+			System.out.println("Updated");
+		}
+	}
+	
+	/**
+	 * Inserts into a table dependent on the modified statement passed in.
+	 */
+	public void insert(String statement, int money) throws Exception {
+		this.money = money;
+		db.insertStatement(statement);
 	}
 	
 }
