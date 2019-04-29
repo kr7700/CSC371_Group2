@@ -30,8 +30,8 @@ public class Display2_Forrester extends javax.swing.JFrame {
 	/**
      * Creates new form MessageGUI
      */
-    public Display2_Forrester(ArrayList<String> result) {
-        initComponents(result);
+    public Display2_Forrester(ArrayList<String> result, Messanger m) {
+        initComponents(result, m);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -41,7 +41,7 @@ public class Display2_Forrester extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     //private void initComponents() {
-    private void initComponents(ArrayList<String> results) {
+    private void initComponents(ArrayList<String> results, Messanger m) {
 
         jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
@@ -65,7 +65,12 @@ public class Display2_Forrester extends javax.swing.JFrame {
         jButton1.setPreferredSize(new java.awt.Dimension(78, 25));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                try {
+					jButton1ActionPerformed(evt, m);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
         jPanel2.add(jButton1);
@@ -121,8 +126,9 @@ public class Display2_Forrester extends javax.swing.JFrame {
         // TODO add your handling code here:
     }                                            
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        MessageInput.setText("");// TODO add your handling code here:
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt, Messanger m) throws Exception {  
+    	m.sendMessage(MessageInput.getText());
+        MessageInput.setText("");// TODO add your handling code here:\
     }                                        
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {                                           
@@ -164,7 +170,7 @@ public class Display2_Forrester extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Display2_Forrester(result).setVisible(true);
+                new Display2_Forrester(result, m).setVisible(true);
             }
         });
     }

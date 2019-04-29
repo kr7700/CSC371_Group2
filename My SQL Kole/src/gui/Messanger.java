@@ -64,8 +64,6 @@ public class Messanger {
         {
             DriverManager.registerDriver(new com.mysql.jdbc.Driver());
             try {
-            	//This will call upon the method that runs the insert statements
-				//testNonSelectStatements();
 				//This will call upon the method that runs select statments
 				result = testSelectStatements();
 			} catch (Exception e) {
@@ -79,53 +77,20 @@ public class Messanger {
 
         return result;
     }
-    
-    /**
-     * This creates a table TEST_Forrester for the selection and insertion tests
-     * @throws SQLException
-     */
-    public void createTable() throws SQLException
-    {
-    	String createData = new String("CREATE TABLE TEST_Forrester (CNum int, Age int, Name char(10), LName varchar(30), percent double, PRIMARY KEY (CNum));");
-    	Statement stmt = m_dbConn.createStatement();
-    	stmt.executeUpdate(createData);
-    	System.out.println("Table Added");
-    }
 
    /**
     * To execute an SQL statement that is not a SELECT statement.
     */
-    public void testNonSelectStatements() throws Exception
+    public void sendMessage(String input) throws Exception
     {
 
         //This string will allows us to insert into the database with any value
-        String insertData = new String("INSERT INTO TEST_Forrester (CNum, Age, Name, LName, percent) VALUES (?,?,?,?,?)");
+        String insertData = new String("INSERT INTO CHAT_MESSAGES(C_Name, Message) VALUES (?,?)"); 
+        createConnection();
         PreparedStatement stmt = m_dbConn.prepareStatement(insertData);
-        final long startTime = System.currentTimeMillis();
-        //This loop will run the loop inside 5000 times, while recording how close it is to being done.
-        for(int j = 1; j <= 5000; j++)
-        {
-        	//This loop will insert 100 rows into the datatable
-        	for(int i = 1; i <= 100; i++) {
-        		stmt.setInt(1, ((j-1)*100)+(i-1));
-           		stmt.setInt(2, ((j-1)*100)+(i-1));
-           		int toString = 500000-(j*i);
-           		String inset = Integer.toString(toString);
-           		stmt.setString(3, inset);
-           		stmt.setString(4, inset);
-           		Random r = new Random();
-           		double randomValue = 100 + (100 - 0) * r.nextDouble();
-           		stmt.setDouble(5, randomValue);
-           		stmt.addBatch();
-        	}
-        	stmt.executeBatch();
-        	stmt.clearBatch(); 
-        	double start = (double)(j);
-        	double percentage = (start/5000) * 100;
-        	System.out.println(percentage + "%");
-        }
-        final long endTime = System.currentTimeMillis();
-        System.out.println("Total execution time: " + (endTime - startTime));
+        stmt.setString(1, "The Troll Slaiyers");
+        stmt.setString(2, input);
+        stmt.executeUpdate();
     }
 
    /**
@@ -136,20 +101,13 @@ public class Messanger {
          String selectData = new String("SELECT * FROM PLAYER");
          PreparedStatement stmt = m_dbConn.prepareStatement(selectData);
          //Used to record the time taken
-         final long startTime = System.currentTimeMillis();
          ResultSet rs = null;
          rs = stmt.executeQuery();
-         //int i = 0;
          while(rs.next())
          {
         	 String data = rs.getString("Name");
         	 result.add(data);
-        	 //System.out.println(data);
-        	 //System.out.println(result.get(i));
-        	 //i++;
          }
-         final long endTime = System.currentTimeMillis();
-         System.out.println("Total execution time: " + (endTime - startTime));
          return result;
      }
     
