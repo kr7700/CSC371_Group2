@@ -1,8 +1,10 @@
 package gui;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -16,21 +18,21 @@ import java.sql.SQLException;
  */
 public class Display2_Forrester extends javax.swing.JFrame {
 
-	public static final String DB_LOCATION = "jdbc:mysql://db.cs.ship.edu:3306/csc371_30";
-	public static final String LOGIN_NAME = "csc371_30";
-	public static final String PASSWORD = "Password30";
-
     /**
 	 * 
 	 */
+	/**public void getResults(ArrayList<String> vanilla)
+	{
+		results = new String[vanilla.size()];
+		results = vanilla.toArray(results);
+	}*/
 	private static final long serialVersionUID = 2353996549490011836L;
 	/**
      * Creates new form MessageGUI
      */
-    public Display2_Forrester() {
-        initComponents();
+    public Display2_Forrester(ArrayList<String> result) {
+        initComponents(result);
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -38,7 +40,8 @@ public class Display2_Forrester extends javax.swing.JFrame {
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
-    private void initComponents() {
+    //private void initComponents() {
+    private void initComponents(ArrayList<String> results) {
 
         jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
@@ -83,7 +86,10 @@ public class Display2_Forrester extends javax.swing.JFrame {
         jComboBox1.setBackground(new java.awt.Color(24, 24, 24));
         jComboBox1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jComboBox1.setForeground(new java.awt.Color(255, 253, 208));
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Select Player", "New Player", "Nick's glourisous thigh", "What the fuuuuu" }));
+        //jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Fight da powa", "Select Player", "New Player", "Nick's glourisous thigh", "What the fuuuuu" }));
+        String[] temp = new String[results.size()];
+        temp = results.toArray(temp);
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(temp));
         jComboBox1.setBorder(null);
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -126,12 +132,17 @@ public class Display2_Forrester extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) throws SQLException{
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
+    	Messanger m = new Messanger();
+    	ArrayList<String> result = m.runDatabase();
+
+    	
+    	
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -153,7 +164,7 @@ public class Display2_Forrester extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Display2_Forrester().setVisible(true);
+                new Display2_Forrester(result).setVisible(true);
             }
         });
     }
