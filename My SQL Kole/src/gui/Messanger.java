@@ -23,23 +23,13 @@ public class Messanger {
     protected Connection m_dbConn = null;
     public ArrayList <String> result = new ArrayList<String>();
     
-    
+    /**
+     * A basic constructor
+     */
     Messanger(){
     	
     }
     
-    public ArrayList<String> getResults(){
-    	System.out.println(result.get(1));
-    	return result;
-    }
-    
-    public int getResultsSize() {
-    	return result.size();
-    }
-    
-    public void addResult(String s) {
-    	result.add(s);
-    }
     
     
    /** 
@@ -64,8 +54,8 @@ public class Messanger {
         {
             DriverManager.registerDriver(new com.mysql.jdbc.Driver());
             try {
-				//This will call upon the method that runs select statments
-				result = testSelectStatements();
+				//This will get us the game's players
+				result = getPlayers();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -79,26 +69,27 @@ public class Messanger {
     }
 
    /**
-    * To execute an SQL statement that is not a SELECT statement.
+    * This will send the message into the CHAT_MESSAGE datatable
     */
-    public void sendMessage(String input) throws Exception
+    public void sendMessage(String input, String sender) throws Exception
     {
 
         //This string will allows us to insert into the database with any value
-        String insertData = new String("INSERT INTO CHAT_MESSAGES(C_Name, Message) VALUES (?,?)"); 
+        String insertData = new String("INSERT INTO CHAT_MESSAGES(P_Name, S_Name ,Message) VALUES (?,?,?)"); 
         createConnection();
         PreparedStatement stmt = m_dbConn.prepareStatement(insertData);
-        stmt.setString(1, "The Troll Slaiyers");
-        stmt.setString(2, input);
+        stmt.setString(1, "guy");
+        stmt.setString(2, sender);
+        stmt.setString(3, input);
         stmt.executeUpdate();
     }
 
    /**
-    * Executes a select command to the TEST_Forrester datatable
+    * This gets the list of players in the game
     */
-    public ArrayList<String> testSelectStatements() throws SQLException
+    public ArrayList<String> getPlayers() throws SQLException
     {
-         String selectData = new String("SELECT * FROM PLAYER");
+         String selectData = new String("Call Select_Player()");
          PreparedStatement stmt = m_dbConn.prepareStatement(selectData);
          //Used to record the time taken
          ResultSet rs = null;
