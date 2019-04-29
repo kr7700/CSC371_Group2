@@ -13,26 +13,20 @@ import java.util.ArrayList;
  */
 
 /**
- *
+ *  This is the display, made using NEATBEANS
  * @author Tyler Forrester
  */
 public class Display2_Forrester extends javax.swing.JFrame {
 
-    /**
-	 * 
-	 */
-	/**public void getResults(ArrayList<String> vanilla)
-	{
-		results = new String[vanilla.size()];
-		results = vanilla.toArray(results);
-	}*/
 	private static final long serialVersionUID = 2353996549490011836L;
+	
 	/**
      * Creates new form MessageGUI
      */
     public Display2_Forrester(ArrayList<String> result, Messanger m) {
         initComponents(result, m);
     }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -122,20 +116,32 @@ public class Display2_Forrester extends javax.swing.JFrame {
         pack();
     }// </editor-fold>                        
 
+    /**
+     * This is called whenever something is typed in the input box, it's not needed
+     * @param evt
+     */
     private void MessageInputActionPerformed(java.awt.event.ActionEvent evt) {                                             
-        // TODO add your handling code here:
     }                                            
 
+    /**
+     * This is called when the send button is pressed
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt, Messanger m) throws Exception {  
-    	m.sendMessage(MessageInput.getText());
+    	String sender = String.valueOf(jComboBox1.getSelectedItem());
+    	m.sendMessage(MessageInput.getText(),sender);
         MessageInput.setText("");// TODO add your handling code here:\
     }                                        
 
+    /**
+     * This is called whent he combo button is pressed
+     * @param evt
+     */
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {                                           
         // TODO add your handling code here:
     }                                          
 
     /**
+     * Main class the runs the application
      * @param args the command line arguments
      */
     public static void main(String args[]) throws SQLException{
