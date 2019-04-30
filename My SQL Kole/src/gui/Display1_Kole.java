@@ -1,8 +1,10 @@
 package gui;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import db.Display1DBStatements;
+import db.MyDB;
 
 /**
  * Displays the amount of money the player has, costs for each type of building
@@ -35,11 +37,10 @@ public class Display1_Kole extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea_BuildingDescription;
     // End of variables declaration         
     
-    static Display1DBStatements d1db;
-    
     // keeping track of variables as they change
     // used for action listeners
     private int money = 0;
+    private int updatedMoney = 0;
     private int deduction = 0;
     private String statement;
     private String buildingID = "000";
@@ -50,6 +51,10 @@ public class Display1_Kole extends javax.swing.JFrame {
     static int mineCost;
     static int researchCenterCost;
     static int shipYardCost;
+    
+    // variables for the database
+    static MyDB db;
+	private static String name;
     
     @SuppressWarnings("static-access")
 	public static void main(String[] args) {
@@ -82,7 +87,7 @@ public class Display1_Kole extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Display1_Kole(d1db.getName()).setVisible(true);
+                new Display1_Kole(name).setVisible(true);
             }
         });
     }
@@ -93,16 +98,23 @@ public class Display1_Kole extends javax.swing.JFrame {
      * what creates the display.
      */
     public Display1_Kole(String playerName) {
-    	d1db = new Display1DBStatements(playerName);
+    	name = playerName;
+    	//d1db = new Display1DBStatements(playerName);
+    	
+    	try {
+			db = new MyDB();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
     	
     	try {
 			//db.selectPlayerName();
-			d1db.selectMoney(d1db.getName());
-			System.out.println("Name: " + d1db.getName() + " Money :" + d1db.getMoney());
-			factoryCost = d1db.getBuildingCost("FACTORY");
-			mineCost = d1db.getBuildingCost("MINE");
-			researchCenterCost = d1db.getBuildingCost("RESEARCH_CENTER");
-			shipYardCost = d1db.getBuildingCost("SHIPYARD");
+			selectMoney(name);
+			System.out.println("Name: " + name + " Money :" + money);
+			factoryCost = getBuildingCost("FACTORY");
+			mineCost = getBuildingCost("MINE");
+			researchCenterCost = getBuildingCost("RESEARCH_CENTER");
+			shipYardCost = getBuildingCost("SHIPYARD");
 			//d1db.updateMoney(playerName, 900000); // sets our player's money very high for testing
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -152,14 +164,14 @@ public class Display1_Kole extends javax.swing.JFrame {
         jLabel_CurrencyAmt.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         jLabel_CurrencyAmt.setForeground(new java.awt.Color(249, 242, 93));
         jLabel_CurrencyAmt.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel_CurrencyAmt.setText("" + d1db.getMoney());
+        jLabel_CurrencyAmt.setText("" + money);
         jPanel2.add(jLabel_CurrencyAmt); // add the label to the panel
         jLabel_CurrencyAmt.setBounds(280, 550, 210, 30);
 
         // set the specifications for the Building Description jlabel
         jLabel_BuildingDescrip.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         jLabel_BuildingDescrip.setForeground(new java.awt.Color(255, 253, 208));
-        jLabel_BuildingDescrip.setText(d1db.getName());
+        jLabel_BuildingDescrip.setText(name);
         jPanel2.add(jLabel_BuildingDescrip); // add the label to the panel
         jLabel_BuildingDescrip.setBounds(90, 550, 190, 30);
 
@@ -317,14 +329,14 @@ public class Display1_Kole extends javax.swing.JFrame {
         jLabel_BuildingName.setText("Factory");
         jTextArea_BuildingDescription.setText("Factories can be used to turn mined resources from Mines"
         		+ " into items called baubles to sell for money.");
-        jLabel_CurrencyAmt.setText(d1db.getMoney() + " > " + (d1db.getMoney() - factoryCost)); // display money after deduction
+        jLabel_CurrencyAmt.setText(money + " > " + (money - factoryCost)); // display money after deduction
         
         // set variables for current building name and amount
         deduction = factoryCost;
-        money = d1db.getMoney() - deduction; // calculate the new balance after deduction
+        updatedMoney = money - deduction; // calculate the new balance after deduction
         try {
-			buildingID = d1db.generateID("FACTORY"); // generate a new ID for the factory
-			planetID = d1db.getPlanetID(d1db.getName()); // get the planet ID owned by the player to apply to the building
+			buildingID = generateID("FACTORY"); // generate a new ID for the factory
+			planetID = getPlanetID(name); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -344,14 +356,14 @@ public class Display1_Kole extends javax.swing.JFrame {
         jTextArea_BuildingDescription.setText("Mines have the ability to gather raw resources the player"
         		+ " may use to build ships at a ShipYard, items to sell at a Factory, or research technology"
         		+ " at a Research Center.");
-        jLabel_CurrencyAmt.setText(d1db.getMoney() + " > " + (d1db.getMoney() - mineCost)); // display money after deduction
+        jLabel_CurrencyAmt.setText(money + " > " + (money - mineCost)); // display money after deduction
         
         // set variables for current building name and amount
         deduction = mineCost;
-        money = d1db.getMoney() - deduction; // calculate the new balance after deduction
+        updatedMoney = money - deduction; // calculate the new balance after deduction
         try {
-			buildingID = d1db.generateID("MINE"); // generate a new ID for the mine
-			planetID = d1db.getPlanetID(d1db.getName()); // get the planet ID owned by the player to apply to the building
+			buildingID = generateID("MINE"); // generate a new ID for the mine
+			planetID = getPlanetID(name); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -369,14 +381,14 @@ public class Display1_Kole extends javax.swing.JFrame {
     private void jRadioButton_RCActionPerformed(java.awt.event.ActionEvent evt) {                                                
         jLabel_BuildingName.setText("Research Center");
         jTextArea_BuildingDescription.setText("Research Centers use mined resources to improve existing technologies.");
-        jLabel_CurrencyAmt.setText(d1db.getMoney() + " > " + (d1db.getMoney() - researchCenterCost)); // display money after deduction
+        jLabel_CurrencyAmt.setText(money + " > " + (money - researchCenterCost)); // display money after deduction
         
         // set variables for current building name and amount
         deduction = researchCenterCost;
-        money = d1db.getMoney() - deduction; // calculate the new balance after deduction
+        updatedMoney = money - deduction; // calculate the new balance after deduction
         try {
-			buildingID = d1db.generateID("RESEARCH_CENTER"); // generate a new ID for the research center
-			planetID = d1db.getPlanetID(d1db.getName()); // get the planet ID owned by the player to apply to the building
+			buildingID = generateID("RESEARCH_CENTER"); // generate a new ID for the research center
+			planetID = getPlanetID(name); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -394,14 +406,14 @@ public class Display1_Kole extends javax.swing.JFrame {
     private void jRadioButton_SYActionPerformed(java.awt.event.ActionEvent evt) {                                                
         jLabel_BuildingName.setText("ShipYard");
         jTextArea_BuildingDescription.setText("ShipYards use mined resources to build additional ships.");
-        jLabel_CurrencyAmt.setText(d1db.getMoney() + " > " + (d1db.getMoney() - shipYardCost)); // display money after deduction
+        jLabel_CurrencyAmt.setText(money + " > " + (money - shipYardCost)); // display money after deduction
         
         // set variables for current building name and amount
         deduction = shipYardCost;
-        money = d1db.getMoney() - deduction; // calculate the new balance after deduction
+        updatedMoney = money - deduction; // calculate the new balance after deduction
         try {
-			buildingID = d1db.generateID("SHIPYARD"); // generate a new ID for the shipyard
-			planetID = d1db.getPlanetID(d1db.getName()); // get the planet ID owned by the player to apply to the building
+			buildingID = generateID("SHIPYARD"); // generate a new ID for the shipyard
+			planetID = getPlanetID(name); // get the planet ID owned by the player to apply to the building
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -424,14 +436,15 @@ public class Display1_Kole extends javax.swing.JFrame {
 			// to be placed
 			if (statement != null) {
 				try {
-					d1db.updateMoney(d1db.getName(), money);
+					updateMoney(name, updatedMoney);
+					money = updatedMoney;
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 
 				// update a table dependant on which building was selected
 				try {
-					d1db.insert(statement, money);
+					insert(statement, money);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -450,7 +463,6 @@ public class Display1_Kole extends javax.swing.JFrame {
     	} else {
     		System.out.println("Not enough currency.");
     	}
-        //this.dispose();
     }                                                
 
     /**
@@ -459,5 +471,115 @@ public class Display1_Kole extends javax.swing.JFrame {
      */
     private void jButton_CloseActionPerformed(java.awt.event.ActionEvent evt) {                                              
         this.dispose();
-    }                                              
+    }
+	
+	/**
+	 * Grabs how much money the player has using a procedure.
+	 * @throws SQLException
+	 */
+	public void selectMoney(String playerName) throws SQLException {
+		String selectData1 = new String("call selectMoney(?)");
+		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
+		stmt1.setString(1, playerName);
+		
+		ResultSet rs1 = stmt1.executeQuery();
+		
+		// stores the amount of money into a variable
+		if(rs1.next()) {
+			int data = rs1.getInt("Money");
+			money = data;
+			System.out.println(money);
+		}
+	}
+	
+	/**
+	 * Selects the cost of a given building.
+	 * @throws SQLException
+	 */
+	public int getBuildingCost(String buildingName) throws SQLException {
+		String selectData1 = new String("select Cost from " + buildingName);
+		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
+		
+		ResultSet rs1 = stmt1.executeQuery();
+		
+		// returns the cost of the building
+		int cost = 0;
+		if(rs1.next()) {
+			cost = rs1.getInt("Cost");
+			System.out.println(buildingName + " Cost: " + cost);
+		}
+		return cost;
+	}
+	
+	/**
+	 * Selects the planet ID of a planet owned by a certain player.
+	 * @throws SQLException
+	 */
+	public String getPlanetID(String playerName) throws SQLException {
+		String selectData1 = new String("select ID from PLANET where P_Name = ?");
+		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
+		stmt1.setString(1, playerName);
+		
+		ResultSet rs1 = stmt1.executeQuery();
+		
+		// returns the planet id
+		String pID = "00x00";
+		if(rs1.next()) {
+			pID = rs1.getString("ID");
+//			System.out.println(buildingName + " P_ID: " + pID);
+			System.out.println("Planet ID: " + pID);
+		}
+		return pID;
+	}
+	
+	/**
+	 * Grabs the highest ID in a given building's table and generates
+	 * the next ID up from it.
+	 * @throws SQLException
+	 */
+	public String generateID(String buildingName) throws SQLException {
+		String selectData1 = new String("select MAX(ID) from " + buildingName);
+		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
+		
+		String newID = "000";
+		ResultSet rs1 = stmt1.executeQuery();
+		
+		// returns the new generated id after grabbing
+		// the last added id and incrementing it
+		if(rs1.next()) {
+			newID = rs1.getString("MAX(ID)");
+			int lastAddedID = Integer.parseInt(newID);
+			newID = "" + lastAddedID;
+			newID = String.format("%03d", (lastAddedID + 1));
+			
+			System.out.println("Last Added ID: " + lastAddedID + " -> Generated ID: " + newID);
+		}
+		
+		return newID;
+	}
+	
+	/**
+	 * Updates a given amount of money for a given player.
+	 * @throws SQLException
+	 */
+	public void updateMoney(String playerName, int newAmount) throws SQLException {
+		String selectData1 = new String("update PLAYER set Money = ? where Name = ?");
+		PreparedStatement stmt1 = db.getConn().prepareStatement(selectData1);
+		stmt1.setInt(1, newAmount);
+		stmt1.setString(2, playerName);
+		
+		// updates the money
+		int added = stmt1.executeUpdate();
+		if(added == 1) {
+			System.out.println("Updated");
+		}
+	}
+	
+	/**
+	 * Inserts into a table dependent on the modified statement passed in.
+	 */
+	public void insert(String statement, int money) throws Exception {
+		this.money = money;
+		db.insertStatement(statement);
+	}
 }
