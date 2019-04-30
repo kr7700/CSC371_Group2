@@ -20,11 +20,15 @@ public class Display2_Forrester extends javax.swing.JFrame {
 
 	private static final long serialVersionUID = 2353996549490011836L;
 	
+	
+	public Display2_Forrester() {
+		
+	}
 	/**
      * Creates new form MessageGUI
      */
-    public Display2_Forrester(ArrayList<String> result, Messanger m) {
-        initComponents(result, m);
+    public Display2_Forrester(ArrayList<String> result, Messanger m, String user) {
+        initComponents(result, m, user);
     }
     
     /**
@@ -35,7 +39,7 @@ public class Display2_Forrester extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     //private void initComponents() {
-    private void initComponents(ArrayList<String> results, Messanger m) {
+    private void initComponents(ArrayList<String> results, Messanger m, String user) {
 
         jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
@@ -43,7 +47,7 @@ public class Display2_Forrester extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
 
         jPanel2.setLayout(null);
@@ -60,7 +64,7 @@ public class Display2_Forrester extends javax.swing.JFrame {
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
-					jButton1ActionPerformed(evt, m);
+					jButton1ActionPerformed(evt, m, user);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -85,7 +89,6 @@ public class Display2_Forrester extends javax.swing.JFrame {
         jComboBox1.setBackground(new java.awt.Color(24, 24, 24));
         jComboBox1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jComboBox1.setForeground(new java.awt.Color(255, 253, 208));
-        //jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Fight da powa", "Select Player", "New Player", "Nick's glourisous thigh", "What the fuuuuu" }));
         String[] temp = new String[results.size()];
         temp = results.toArray(temp);
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(temp));
@@ -126,9 +129,9 @@ public class Display2_Forrester extends javax.swing.JFrame {
     /**
      * This is called when the send button is pressed
      */
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt, Messanger m) throws Exception {  
-    	String sender = String.valueOf(jComboBox1.getSelectedItem());
-    	m.sendMessage(MessageInput.getText(),sender);
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt, Messanger m, String sender) throws Exception {  
+    	String reciptient = String.valueOf(jComboBox1.getSelectedItem());
+    	m.sendMessage(MessageInput.getText(),reciptient, sender);
         MessageInput.setText("");// TODO add your handling code here:\
     }                                        
 
@@ -145,6 +148,47 @@ public class Display2_Forrester extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) throws SQLException{
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+    	Messanger m = new Messanger();
+    	ArrayList<String> result = m.runDatabase();
+    	String user = "guy";
+    	
+    	
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Display2_Forrester.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Display2_Forrester.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Display2_Forrester.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Display2_Forrester.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Display2_Forrester(result, m, user).setVisible(true);
+            }
+        });
+    }
+    
+    /**
+     * Runs without main class
+     * @throws SQLException
+     */
+    public static void runner(String user) throws SQLException{
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -176,7 +220,7 @@ public class Display2_Forrester extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Display2_Forrester(result, m).setVisible(true);
+                new Display2_Forrester(result, m, user).setVisible(true);
             }
         });
     }
