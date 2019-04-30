@@ -71,15 +71,15 @@ public class Messanger {
    /**
     * This will send the message into the CHAT_MESSAGE datatable
     */
-    public void sendMessage(String input, String sender) throws Exception
+    public void sendMessage(String input, String recipient, String user) throws Exception
     {
 
         //This string will allows us to insert into the database with any value
         String insertData = new String("INSERT INTO CHAT_MESSAGES(P_Name, S_Name ,Message) VALUES (?,?,?)"); 
         createConnection();
         PreparedStatement stmt = m_dbConn.prepareStatement(insertData);
-        stmt.setString(1, "guy");
-        stmt.setString(2, sender);
+        stmt.setString(1, user);
+        stmt.setString(2, recipient);
         stmt.setString(3, input);
         stmt.executeUpdate();
     }

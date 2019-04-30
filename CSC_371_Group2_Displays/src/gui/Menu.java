@@ -6,6 +6,8 @@
 
 package gui;
 
+import java.sql.SQLException;
+
 /**
  * A menu to select which display you want to view.
  * @author Jacob Kole
@@ -114,7 +116,12 @@ public class Menu extends javax.swing.JFrame {
         jButton_Display2.setText("Display Two");
         jButton_Display2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_Display2ActionPerformed(evt);
+                try {
+					jButton_Display2ActionPerformed(evt);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 
@@ -222,8 +229,11 @@ public class Menu extends javax.swing.JFrame {
     	frame.runner();
     }                                                
 
-    private void jButton_Display2ActionPerformed(java.awt.event.ActionEvent evt) {                                                 
-        // TODO add your handling code here:
+    private void jButton_Display2ActionPerformed(java.awt.event.ActionEvent evt) throws SQLException { 
+    	Messanger m = new Messanger();
+        Display2_Forrester frame = new Display2_Forrester();
+        frame.runner(username);
+        
     }                                                
 
     private void jButton_Display3ActionPerformed(java.awt.event.ActionEvent evt) {                                                 
