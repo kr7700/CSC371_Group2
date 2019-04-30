@@ -20,7 +20,9 @@ public class Display2_Forrester extends javax.swing.JFrame {
 
 	private static final long serialVersionUID = 2353996549490011836L;
 	
-	
+	/**
+	 * Create messageGUI when running for Menu
+	 */
 	public Display2_Forrester() {
 		
 	}

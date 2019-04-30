@@ -230,6 +230,9 @@ public class Menu extends javax.swing.JFrame {
     }                                                
 
     private void jButton_Display2ActionPerformed(java.awt.event.ActionEvent evt) throws SQLException { 
+    	/**
+    	 * Opens display 2
+    	 */
     	Messanger m = new Messanger();
         Display2_Forrester frame = new Display2_Forrester();
         frame.runner(username);
