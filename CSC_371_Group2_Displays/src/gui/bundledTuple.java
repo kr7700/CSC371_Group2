@@ -30,14 +30,9 @@ public class bundledTuple
 		}
 		return concatString;
 	}
-	
-	public String getTypes()
+
+	public Object getDataValue(int index) 
 	{
-		String temp = "";
-		for(Object obj : dataValues)
-		{
-			temp += obj.getClass();
-		}
-		return temp;
+		return dataValues.get(index);
 	}
 }

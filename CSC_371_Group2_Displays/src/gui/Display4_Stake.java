@@ -19,6 +19,7 @@ public class Display4_Stake extends javax.swing.JFrame
 {
 	static MyDB db = null; //allows for easy access to database connection
 	ArrayList<bundledTuple> tupleList; //holds the list of tuples from the currently selected table
+	ArrayList<String> attributeList; //holds the list of attributes for the currently selected table
 	
     /**
 	 * Default Serial ID
@@ -86,6 +87,7 @@ public class Display4_Stake extends javax.swing.JFrame
 				}
             }
         });
+        tableSelected(null); //initially preps the attribute list and other globals 
         
         attributeComboBox.setBackground(new java.awt.Color(24, 24, 24));
         attributeComboBox.setForeground(new java.awt.Color(255, 253, 208));
@@ -166,7 +168,12 @@ public class Display4_Stake extends javax.swing.JFrame
         deleteButton.setText("Delete Selected Row");
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButtonPressed(evt);
+                try {
+					deleteButtonPressed(evt);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 
@@ -266,14 +273,39 @@ public class Display4_Stake extends javax.swing.JFrame
         // TODO add your handling code here:
     }                                    
 
-    private void deleteButtonPressed(java.awt.event.ActionEvent evt) {                                     
-        System.out.println(tupleScrollList.getSelectedValue());
+    private void deleteButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
+    {       
+        bundledTuple targetTuple = findTargetTuple(tupleScrollList.getSelectedValue());
+        if(targetTuple == null)
+        	return;
+        
+        String stmtString = "DELETE FROM " + tableComboBox.getSelectedItem() + " WHERE";
+        int index = 0;
+        for(String attribute : attributeList)
+        {
+        	if (index > 0)
+        		stmtString += " AND";
+        	
+        	if(targetTuple.getDataValue(index) instanceof String)
+            	stmtString += " " + attribute + " = '" + targetTuple.getDataValue(index) + "'";
+        	else
+        		stmtString += " " + attribute + " = " + targetTuple.getDataValue(index);
+
+        	index++;
+        }
+        stmtString += ";";
+        System.out.println(stmtString);
+        
+        PreparedStatement stmt = db.getConn().prepareStatement(stmtString);
+        stmt.execute();
+        
+        tableSelected(null); //reloads the current table to show tuple removed
     }                                    
 
     private void tableSelected(java.awt.event.ActionEvent evt) throws SQLException 
     {  
     	//Updates the attribute drop down list
-    	ArrayList<String> attributeList = new ArrayList<String>();
+    	attributeList = new ArrayList<String>();
         PreparedStatement stmt = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
 		ResultSet rs = stmt.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
@@ -391,7 +423,6 @@ public class Display4_Stake extends javax.swing.JFrame
     	}    	
     	
     	//creates the model list for the tuple display list
-    	System.out.println(tupleList.get(0).getTypes());
     	return new javax.swing.AbstractListModel<String>() {
             bundledTuple[] tuples = tupleList.toArray(new bundledTuple[1]);
     		public int getSize() { return tuples.length; }
@@ -418,5 +449,15 @@ public class Display4_Stake extends javax.swing.JFrame
     	}
     	
     	return concatString;
+    }
+    
+    private bundledTuple findTargetTuple(String tupleString)
+    {
+    	for(bundledTuple tuple : tupleList)
+    	{
+    		if (tuple.toString().equals(tupleString))
+    			return tuple;
+    	}
+    	return null;
     }
 }
