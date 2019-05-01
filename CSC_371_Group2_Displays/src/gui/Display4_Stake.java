@@ -150,7 +150,12 @@ public class Display4_Stake extends javax.swing.JFrame
         insertButton.setText("Insert Row");
         insertButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                insertButtonPressed(evt);
+                try {
+					insertButtonPressed(evt);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 
@@ -265,12 +270,32 @@ public class Display4_Stake extends javax.swing.JFrame
         pack();
     }// </editor-fold>                        
 
-    private void insertButtonPressed(java.awt.event.ActionEvent evt) {                                     
-        // TODO add your handling code here:
+    private void insertButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
+    {      
+        String stmtString = "INSERT INTO " + tableComboBox.getSelectedItem() + " (";
+        for(String attribute : attributeList)
+        {
+        	stmtString += attribute + ", ";
+        }
+        stmtString = stmtString.substring(0, stmtString.length() - 2);
+        stmtString += ") VALUES (";
+        
+		String valueString = addInsertionValues(stmtString);
+		if(valueString == null)
+			return;
+        
+		stmtString += valueString;
+        stmtString += ");";
+        System.out.println(stmtString);
+        
+        PreparedStatement stmt = db.getConn().prepareStatement(stmtString);
+        stmt.execute();
+        
+        tableSelected(null); //reloads the current table to show tuple added
     }                                    
 
     private void updateButtonPressed(java.awt.event.ActionEvent evt) {                                     
-        // TODO add your handling code here:
+    	// TODO add your handling code here:
     }                                    
 
     private void deleteButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
@@ -444,8 +469,8 @@ public class Display4_Stake extends javax.swing.JFrame
     		concatString += "[" + rsmd.getColumnName(i) + "]";
     		if(i != numColumns)
     			concatString += ", ";
-//    		else
-//    			concatString += "  -  Use comma as delimiter";
+    		else
+    			concatString += "  -  Use comma as delimiter";
     	}
     	
     	return concatString;
@@ -459,5 +484,35 @@ public class Display4_Stake extends javax.swing.JFrame
     			return tuple;
     	}
     	return null;
+    }
+    
+    private String addInsertionValues(String stmt) throws SQLException
+    {
+    	String temp = rowAdditionTextField.getText();
+    	String[] values = temp.split(",");
+    	if(values.length != attributeList.size())
+    	{
+    		return null;
+    	}
+    	for(int i = 0; i < values.length; i++)
+    		values[i] = values[i].trim();
+    	temp = "";
+    	
+    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+    	ResultSet rs = tupleRetrieval.executeQuery();
+    	ResultSetMetaData rsmd = rs.getMetaData();
+    	System.out.println(rsmd.getColumnTypeName(1));
+    	int index = 1;
+    	for(String str : values)
+    	{
+    		if(rsmd.getColumnTypeName(index) == "VARCHAR" || rsmd.getColumnTypeName(index) == "CHAR"
+    				|| rsmd.getColumnTypeName(index) == "TEXT" || rsmd.getColumnTypeName(index) == "ENUM"
+    				|| rsmd.getColumnTypeName(index) == "SET")
+    			temp += "'" + str + "', ";
+    		else
+    			temp += str + ", ";
+    	}
+    	temp = temp.substring(0, temp.length() - 2);
+    	return temp;
     }
 }
