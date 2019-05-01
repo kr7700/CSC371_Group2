@@ -168,7 +168,12 @@ public class Display4_Stake extends javax.swing.JFrame
         deleteButton.setText("Delete Selected Row");
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButtonPressed(evt);
+                try {
+					deleteButtonPressed(evt);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 
@@ -268,7 +273,7 @@ public class Display4_Stake extends javax.swing.JFrame
         // TODO add your handling code here:
     }                                    
 
-    private void deleteButtonPressed(java.awt.event.ActionEvent evt) 
+    private void deleteButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
     {       
         bundledTuple targetTuple = findTargetTuple(tupleScrollList.getSelectedValue());
         if(targetTuple == null)
@@ -291,7 +296,10 @@ public class Display4_Stake extends javax.swing.JFrame
         stmtString += ";";
         System.out.println(stmtString);
         
-//        PreparedStatement stmt = db.getConn().prepareStatement()
+        PreparedStatement stmt = db.getConn().prepareStatement(stmtString);
+        stmt.execute();
+        
+        tableSelected(null); //reloads the current table to show tuple removed
     }                                    
 
     private void tableSelected(java.awt.event.ActionEvent evt) throws SQLException 
