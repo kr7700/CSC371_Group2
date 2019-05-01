@@ -51,7 +51,7 @@ public class Display4_Stake extends javax.swing.JFrame
         tupleScrollList = new javax.swing.JList<>();
         rowAdditionTextField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        templateLabel = new javax.swing.JLabel();
         attributeComboBox = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
         updateTextField = new javax.swing.JTextField();
@@ -122,9 +122,9 @@ public class Display4_Stake extends javax.swing.JFrame
         jLabel1.setForeground(new java.awt.Color(255, 253, 208));
         jLabel1.setText("Add to Selected Table, Follow Format:");
 
-        jLabel2.setBackground(new java.awt.Color(24, 24, 24));
-        jLabel2.setForeground(new java.awt.Color(255, 253, 208));
-        jLabel2.setText("temp");
+        templateLabel.setBackground(new java.awt.Color(24, 24, 24));
+        templateLabel.setForeground(new java.awt.Color(255, 253, 208));
+        templateLabel.setText(generateTemplate());
 
         jLabel3.setBackground(new java.awt.Color(24, 24, 24));
         jLabel3.setForeground(new java.awt.Color(255, 253, 208));
@@ -195,7 +195,7 @@ public class Display4_Stake extends javax.swing.JFrame
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabel3)
-                                            .addComponent(jLabel2))
+                                            .addComponent(templateLabel))
                                         .addGap(28, 28, 28))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                         .addComponent(attributeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -236,7 +236,7 @@ public class Display4_Stake extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
                         .addGap(2, 2, 2)
-                        .addComponent(jLabel2)
+                        .addComponent(templateLabel)
                         .addGap(6, 6, 6)
                         .addComponent(rowAdditionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -290,6 +290,9 @@ public class Display4_Stake extends javax.swing.JFrame
         
         //Updates the tuple display list
         tupleScrollList.setModel(buildTupleListModel());
+        
+        //Updates the insertion template
+        templateLabel.setText(generateTemplate());
     }                              
 
     private void attributeSelected(java.awt.event.ActionEvent evt) {                                   
@@ -349,7 +352,7 @@ public class Display4_Stake extends javax.swing.JFrame
     private javax.swing.JComboBox<String> attributeComboBox;
     private javax.swing.JComboBox<String> tableComboBox;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel templateLabel;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -360,14 +363,22 @@ public class Display4_Stake extends javax.swing.JFrame
     private javax.swing.JTextField updateTextField;
     // End of variables declaration    
     
+    /**
+     * Creates and returns the new tuple list when the active table is changed
+     * @return
+     * @throws SQLException
+     */
     private javax.swing.AbstractListModel<String> buildTupleListModel() throws SQLException
     {
+    	//creates statement to select all tuples from active table
     	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
-    	//TODO get value from each column, concate into single strings, add all strings to array, build model 
+    	
+    	//executes the statement and retrieves results
     	ResultSet rs = tupleRetrieval.executeQuery();
     	ResultSetMetaData rsmd = rs.getMetaData();
     	int numColumns = rsmd.getColumnCount();
     	
+    	//Adds the tuples to a list
     	tupleList = new ArrayList<bundledTuple>();
     	int index = 1;
     	while(rs.next())
@@ -380,12 +391,34 @@ public class Display4_Stake extends javax.swing.JFrame
     		tupleList.add(tempTuple);
     		index++;
     	}    	
+    	
+    	//creates the model list for the tuple display list
     	System.out.println(tupleList.get(0).getTypes());
     	return new javax.swing.AbstractListModel<String>() {
-            //String[] strings = { "Table Row 1", "Table Row 2", "Table Row 3", "Table Row 4", "Table Row 5", "Table Row 6", "Table Row 7", "Table Row 8", "Table Row 9", "Table Row 10", "Table Row 11", "Table Row 12" };
             bundledTuple[] tuples = tupleList.toArray(new bundledTuple[1]);
     		public int getSize() { return tuples.length; }
             public String getElementAt(int i) { return tuples[i].toString(); }
         };
+    }
+    
+    private String generateTemplate() throws SQLException
+    {
+    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+    	ResultSet rs = tupleRetrieval.executeQuery();
+    	ResultSetMetaData rsmd = rs.getMetaData();
+    	int numColumns = rsmd.getColumnCount();
+    	
+    	String concatString = "";
+    	
+    	for(int i = 1; i <= numColumns; i++)
+    	{
+    		concatString += "[" + rsmd.getColumnName(i) + "]";
+    		if(i != numColumns)
+    			concatString += ", ";
+    		else
+    			concatString += "  -  Use comma as delimiter";
+    	}
+    	
+    	return concatString;
     }
 }
