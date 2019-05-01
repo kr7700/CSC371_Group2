@@ -269,9 +269,7 @@ public class Display4_Stake extends javax.swing.JFrame
     }                                    
 
     private void deleteButtonPressed(java.awt.event.ActionEvent evt) 
-    {                                     
-        System.out.println(tupleScrollList.getSelectedValue());
-        
+    {       
         bundledTuple targetTuple = findTargetTuple(tupleScrollList.getSelectedValue());
         if(targetTuple == null)
         	return;
@@ -282,7 +280,12 @@ public class Display4_Stake extends javax.swing.JFrame
         {
         	if (index > 0)
         		stmtString += " AND";
-        	stmtString += " " + attribute + " = " + targetTuple.getDataValue(index);
+        	
+        	if(targetTuple.getDataValue(index) instanceof String)
+            	stmtString += " " + attribute + " = '" + targetTuple.getDataValue(index) + "'";
+        	else
+        		stmtString += " " + attribute + " = " + targetTuple.getDataValue(index);
+
         	index++;
         }
         stmtString += ";";
