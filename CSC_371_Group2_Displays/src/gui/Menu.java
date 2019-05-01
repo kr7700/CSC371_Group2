@@ -216,7 +216,8 @@ public class Menu extends javax.swing.JFrame {
     }    
     
 	private void jButton_DirectAccessActionPerformed(java.awt.event.ActionEvent evt) {                                                     
-    	// TODO add your handling code here:
+    	DirectAccessDisplay_Stake frame = new DirectAccessDisplay_Stake();
+    	frame.setVisible(true);
     }                                                    
 
 	/**
