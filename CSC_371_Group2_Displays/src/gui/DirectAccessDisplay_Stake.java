@@ -15,7 +15,7 @@ import db.MyDB;
  * Partially built by netbeans
  * @author andrew
  */
-public class Display4_Stake extends javax.swing.JFrame 
+public class DirectAccessDisplay_Stake extends javax.swing.JFrame 
 {
 	static MyDB db = null; //allows for easy access to database connection
 	ArrayList<bundledTuple> tupleList; //holds the list of tuples from the currently selected table
@@ -28,7 +28,14 @@ public class Display4_Stake extends javax.swing.JFrame
 	/**
      * Creates new form DBDirectInterfaceGUI
      */
-    public Display4_Stake() {
+    public DirectAccessDisplay_Stake() {
+    	try {
+			db = new MyDB();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
         try {
 			initComponents();
 		} catch (SQLException e) {
@@ -63,7 +70,7 @@ public class Display4_Stake extends javax.swing.JFrame
         updateButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(0, 2, 40));
         jPanel1.setPreferredSize(new java.awt.Dimension(800, 450));
@@ -380,13 +387,13 @@ public class Display4_Stake extends javax.swing.JFrame
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Display4_Stake.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DirectAccessDisplay_Stake.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Display4_Stake.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DirectAccessDisplay_Stake.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Display4_Stake.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DirectAccessDisplay_Stake.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Display4_Stake.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DirectAccessDisplay_Stake.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -394,7 +401,7 @@ public class Display4_Stake extends javax.swing.JFrame
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Display4_Stake().setVisible(true);
+                new DirectAccessDisplay_Stake().setVisible(true);
             }
         });
         
