@@ -18,6 +18,7 @@ import db.MyDB;
 public class Display4_Stake extends javax.swing.JFrame 
 {
 	static MyDB db = null; //allows for easy access to database connection
+	ArrayList<bundledTuple> tupleList; //holds the list of tuples from the currently selected table
 	
     /**
 	 * Default Serial ID
@@ -268,7 +269,7 @@ public class Display4_Stake extends javax.swing.JFrame
     }                                    
 
     private void deleteButtonPressed(java.awt.event.ActionEvent evt) {                                     
-        // TODO add your handling code here:
+        System.out.println(tupleScrollList.getSelectedValue());
     }                                    
 
     private void tableSelected(java.awt.event.ActionEvent evt) throws SQLException 
@@ -363,13 +364,28 @@ public class Display4_Stake extends javax.swing.JFrame
     {
     	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
     	//TODO get value from each column, concate into single strings, add all strings to array, build model 
-    	    	
+    	ResultSet rs = tupleRetrieval.executeQuery();
+    	ResultSetMetaData rsmd = rs.getMetaData();
+    	int numColumns = rsmd.getColumnCount();
     	
-    	
+    	tupleList = new ArrayList<bundledTuple>();
+    	int index = 1;
+    	while(rs.next())
+    	{
+    		bundledTuple tempTuple = new bundledTuple(index);
+    		for(int i = 1; i <= numColumns; i++)
+    		{
+    			tempTuple.addValue(rs.getObject(i), rsmd.getColumnName(i));
+    		}
+    		tupleList.add(tempTuple);
+    		index++;
+    	}    	
+    	System.out.println(tupleList.get(0).getTypes());
     	return new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Table Row 1", "Table Row 2", "Table Row 3", "Table Row 4", "Table Row 5", "Table Row 6", "Table Row 7", "Table Row 8", "Table Row 9", "Table Row 10", "Table Row 11", "Table Row 12" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
+            //String[] strings = { "Table Row 1", "Table Row 2", "Table Row 3", "Table Row 4", "Table Row 5", "Table Row 6", "Table Row 7", "Table Row 8", "Table Row 9", "Table Row 10", "Table Row 11", "Table Row 12" };
+            bundledTuple[] tuples = tupleList.toArray(new bundledTuple[1]);
+    		public int getSize() { return tuples.length; }
+            public String getElementAt(int i) { return tuples[i].toString(); }
         };
     }
 }
