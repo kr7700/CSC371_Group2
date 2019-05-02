@@ -102,7 +102,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         attributeComboBox.setBackground(new java.awt.Color(24, 24, 24));
         attributeComboBox.setForeground(new java.awt.Color(255, 253, 208));
         ArrayList<String> attributeList = new ArrayList<String>();
-        PreparedStatement stmt = db.getConn().prepareStatement("SELECT * FROM " + "ADMINISTRATOR");
+        PreparedStatement stmt = db.getConn().prepareStatement("CALL getAllRows('" + tableList.get(0) + "');");
 		rs = stmt.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
@@ -319,7 +319,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     	String stmtString = "UPDATE " + tableComboBox.getSelectedItem() + " SET " + attributeComboBox.getSelectedItem() + " = ";
     	
     	//Prepares the metadata to check is apostrophes are needed
-    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("CALL getAllRows('" + tableComboBox.getSelectedItem() + "');");
     	ResultSet rs = tupleRetrieval.executeQuery();
     	ResultSetMetaData rsmd = rs.getMetaData();
     	
@@ -408,7 +408,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     {  
     	//Updates the attribute drop down list
     	attributeList = new ArrayList<String>();
-        PreparedStatement stmt = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+        PreparedStatement stmt = db.getConn().prepareStatement("CALL getAllRows('" + tableComboBox.getSelectedItem() + "');");
 		ResultSet rs = stmt.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
@@ -500,7 +500,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     private javax.swing.AbstractListModel<String> buildTupleListModel() throws SQLException
     {
     	//creates statement to select all tuples from active table
-    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("CALL getAllRows('" + tableComboBox.getSelectedItem() + "');");
     	
     	//executes the statement and retrieves results
     	ResultSet rs = tupleRetrieval.executeQuery();
@@ -537,7 +537,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     private String generateTemplate() throws SQLException
     {
     	//prepares the metadata for the table
-    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("CALL getAllRows('" + tableComboBox.getSelectedItem() + "');");
     	ResultSet rs = tupleRetrieval.executeQuery();
     	ResultSetMetaData rsmd = rs.getMetaData();
     	int numColumns = rsmd.getColumnCount();
@@ -593,7 +593,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     	temp = "";
     	
     	//prepares the metadata for the table
-    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("CALL getAllRows('" + tableComboBox.getSelectedItem() + "');");
     	ResultSet rs = tupleRetrieval.executeQuery();
     	ResultSetMetaData rsmd = rs.getMetaData();
     	
