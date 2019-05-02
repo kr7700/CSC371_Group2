@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.swing.ListSelectionModel;
+
 import db.MyDB;
 
 /**
@@ -118,6 +120,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         tupleScrollList.setBackground(new java.awt.Color(24, 24, 24));
         tupleScrollList.setForeground(new java.awt.Color(255, 253, 208));
         tupleScrollList.setModel(buildTupleListModel());
+        tupleScrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(tupleScrollList);
 
         rowAdditionTextField.setBackground(new java.awt.Color(24, 24, 24));
