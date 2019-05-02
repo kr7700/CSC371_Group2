@@ -28,7 +28,9 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
 	/**
      * Creates new form DBDirectInterfaceGUI
      */
-    public DirectAccessDisplay_Stake() {
+    public DirectAccessDisplay_Stake() 
+    {
+    	//gets the database connection
     	try {
 			db = new MyDB();
 		} catch (Exception e) {
@@ -36,6 +38,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
 			e.printStackTrace();
 		}
     	
+    	//initializes the GUI
         try {
 			initComponents();
 		} catch (SQLException e) {
@@ -110,11 +113,6 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
           attributeList.add(name);
         }
         attributeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(attributeList.toArray(new String[1])));
-        attributeComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                attributeSelected(evt);
-            }
-        });
 
         tupleScrollList.setBackground(new java.awt.Color(24, 24, 24));
         tupleScrollList.setForeground(new java.awt.Color(255, 253, 208));
@@ -282,8 +280,10 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         pack();
     }// </editor-fold>                        
 
+    //handles the code for new row insertions
     private void insertButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
     {      
+    	//builds initial part of statement including table values
         String stmtString = "INSERT INTO " + tableComboBox.getSelectedItem() + " (";
         for(String attribute : attributeList)
         {
@@ -292,21 +292,23 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         stmtString = stmtString.substring(0, stmtString.length() - 2);
         stmtString += ") VALUES (";
         
-		String valueString = addInsertionValues(stmtString);
+        //adds the actual values to the statement and closes it
+		String valueString = addInsertionValues();
 		if(valueString == null)
 			return;
-        
 		stmtString += valueString;
         stmtString += ");";
-        System.out.println(stmtString);
         
+        //executes the statement
+        System.out.println(stmtString);
         PreparedStatement stmt = db.getConn().prepareStatement(stmtString);
         stmt.execute();
         
         tableSelected(null); //reloads the current table to show tuple added
-        rowAdditionTextField.setText("");
+        rowAdditionTextField.setText(""); //empties the text field
     }                                    
 
+    //handles the code for updated an attribute
     private void updateButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
     {   
     	//empty input box check
@@ -339,11 +341,12 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
 		else
 			stmtString += updateTextField.getText() + " WHERE";
     	
-    	//finds the target tuple and applys conditions to statement
+    	//finds the target tuple
     	bundledTuple targetTuple = findTargetTuple(tupleScrollList.getSelectedValue());
     	if(targetTuple == null)
         	return;
     	
+    	//adds the conditions to the statement
     	index = 0;
         for(String attribute : attributeList)
         {
@@ -359,6 +362,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         }
         stmtString += ";";
     	
+        //executes the statement
     	System.out.println(stmtString);
     	PreparedStatement stmt = db.getConn().prepareStatement(stmtString);
         stmt.execute();
@@ -368,11 +372,13 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     }                                    
 
     private void deleteButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
-    {       
+    {      
+    	//finds the target tuple
         bundledTuple targetTuple = findTargetTuple(tupleScrollList.getSelectedValue());
         if(targetTuple == null)
         	return;
         
+        //creates the initial part of the statement, including the conditions
         String stmtString = "DELETE FROM " + tableComboBox.getSelectedItem() + " WHERE";
         int index = 0;
         for(String attribute : attributeList)
@@ -388,14 +394,16 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         	index++;
         }
         stmtString += ";";
-        System.out.println(stmtString);
         
+        //executes the statement
+        System.out.println(stmtString);
         PreparedStatement stmt = db.getConn().prepareStatement(stmtString);
         stmt.execute();
         
         tableSelected(null); //reloads the current table to show tuple removed
     }                                    
 
+    //handles the code for updated the display when a new table is selected
     private void tableSelected(java.awt.event.ActionEvent evt) throws SQLException 
     {  
     	//Updates the attribute drop down list
@@ -417,11 +425,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         
         //Updates the insertion template
         templateLabel.setText(generateTemplate());
-    }                              
-
-    private void attributeSelected(java.awt.event.ActionEvent evt) {                                   
-        // TODO add your handling code here:
-    }                                  
+    }                                                               
 
     /**
      * @param args the command line arguments
@@ -429,6 +433,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
      */
     public static void main(String args[]) throws SQLException 
     {
+    	//gets a connection to the database
 		try {
 			db = new MyDB();
 		} catch (Exception e) {
@@ -524,15 +529,21 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         };
     }
     
+    /**
+     * Generates the string used in the template label for adding new rows
+     * @return
+     * @throws SQLException
+     */
     private String generateTemplate() throws SQLException
     {
+    	//prepares the metadata for the table
     	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
     	ResultSet rs = tupleRetrieval.executeQuery();
     	ResultSetMetaData rsmd = rs.getMetaData();
     	int numColumns = rsmd.getColumnCount();
     	
+    	//builds the String
     	String concatString = "";
-    	
     	for(int i = 1; i <= numColumns; i++)
     	{
     		concatString += "[" + rsmd.getColumnName(i) + "]";
@@ -545,6 +556,11 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     	return concatString;
     }
     
+    /**
+     * Finds the object associated with the tuple selected in the list
+     * @param tupleString
+     * @return
+     */
     private bundledTuple findTargetTuple(String tupleString)
     {
     	for(bundledTuple tuple : tupleList)
@@ -552,11 +568,20 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     		if (tuple.toString().equals(tupleString))
     			return tuple;
     	}
+    	
+    	//if tuple is not found, return null
     	return null;
     }
     
-    private String addInsertionValues(String stmt) throws SQLException
+    /**
+     * returns a String with the actual values to be added, formated properly with apostrophes
+     * and commas in the correct locations
+     * @return
+     * @throws SQLException
+     */
+    private String addInsertionValues() throws SQLException
     {
+    	//gets the list of values, splits it into an array, makes sure it isn't empty, and formats
     	String temp = rowAdditionTextField.getText();
     	String[] values = temp.split(",");
     	if(values.length != attributeList.size())
@@ -567,10 +592,12 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     		values[i] = values[i].trim();
     	temp = "";
     	
+    	//prepares the metadata for the table
     	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
     	ResultSet rs = tupleRetrieval.executeQuery();
     	ResultSetMetaData rsmd = rs.getMetaData();
     	
+    	//adds the values into a single string with correct formatting
     	int index = 1;
     	for(String str : values)
     	{
@@ -582,6 +609,8 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     			temp += str + ", ";
     	}
     	temp = temp.substring(0, temp.length() - 2);
+    	
+    	//returns the string
     	return temp;
     }
 }
