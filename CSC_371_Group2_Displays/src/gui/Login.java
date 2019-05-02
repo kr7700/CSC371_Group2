@@ -1,5 +1,9 @@
 package gui;
 
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -101,6 +105,12 @@ public class Login extends javax.swing.JFrame {
                 jTextField_UsernameActionPerformed(evt);
             }
         });
+        jTextField_Username.addMouseListener(new MouseAdapter() {
+        	  @Override
+        	  public void mouseClicked(MouseEvent e) {
+        	    jTextField_Username.setText("");
+        	  }
+        	});
         jPanel1.add(jTextField_Username);
         jTextField_Username.setBounds(300, 120, 140, 20);
 
@@ -111,6 +121,12 @@ public class Login extends javax.swing.JFrame {
                 jPasswordField_PasswordActionPerformed(evt);
             }
         });
+        jPasswordField_Password.addFocusListener(new FocusAdapter() {
+        	  @Override
+        	  public void focusGained(FocusEvent e) {
+        	    jPasswordField_Password.setText("");
+        	  }
+        	});
         jPanel1.add(jPasswordField_Password);
         jPasswordField_Password.setBounds(300, 150, 140, 19);
 
