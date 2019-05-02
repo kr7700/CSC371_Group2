@@ -241,23 +241,7 @@ public class Menu extends javax.swing.JFrame {
         
     }                                                
 
-    /**
-     * Opens display 3
-     * @param evt	on d3 button pressed
-     */
-    @SuppressWarnings("static-access")
-
-    private void jButton_Display3ActionPerformed(java.awt.event.ActionEvent evt)
-    {                                                 
-        Display3_Rutter frame = null;
-		try
-		{
-			frame = new Display3_Rutter(username);
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-        frame.runner();      
-    }
+    private void jButton_Display3ActionPerformed(java.awt.event.ActionEvent evt) {                                                 
+        // TODO add your handling code here:
+    }                                                                   
 }
