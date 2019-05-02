@@ -230,6 +230,7 @@ public class Menu extends javax.swing.JFrame {
     	frame.runner();
     }                                                
 
+    @SuppressWarnings("static-access")
     private void jButton_Display2ActionPerformed(java.awt.event.ActionEvent evt) throws SQLException { 
     	/**
     	 * Opens display 2
