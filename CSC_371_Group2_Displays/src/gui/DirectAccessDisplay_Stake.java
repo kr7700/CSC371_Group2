@@ -20,6 +20,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
 	static MyDB db = null; //allows for easy access to database connection
 	ArrayList<bundledTuple> tupleList; //holds the list of tuples from the currently selected table
 	ArrayList<String> attributeList; //holds the list of attributes for the currently selected table
+	Boolean response = false;
 	
     /**
 	 * Default Serial ID
@@ -377,6 +378,14 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         bundledTuple targetTuple = findTargetTuple(tupleScrollList.getSelectedValue());
         if(targetTuple == null)
         	return;
+        
+        //Prompts a confirmation box
+        DeleteConfirmation confirmation = new DeleteConfirmation(this);
+        confirmation.setVisible(true);
+        if(!response)
+        	return;
+        response = false;
+        
         
         //creates the initial part of the statement, including the conditions
         String stmtString = "DELETE FROM " + tableComboBox.getSelectedItem() + " WHERE";
