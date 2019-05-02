@@ -9,12 +9,21 @@ package gui;
  *
  * @author andrew
  */
-public class DeleteConfirmation extends javax.swing.JFrame {
-
+public class DeleteConfirmation extends javax.swing.JDialog
+{
+	DirectAccessDisplay_Stake parent;
+	
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8589982812990009563L;
+	/**
      * Creates new form DeleteConfirmation
      */
-    public DeleteConfirmation() {
+    public DeleteConfirmation(DirectAccessDisplay_Stake parent) 
+    {
+    	this.parent = parent;
+    	setModal(true);
         initComponents();
     }
 
@@ -32,23 +41,33 @@ public class DeleteConfirmation extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setBackground(new java.awt.Color(24, 24, 24));
-        setPreferredSize(new java.awt.Dimension(245, 60));
+        setPreferredSize(new java.awt.Dimension(340, 60));
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(0, 2, 40));
 
         jLabel1.setForeground(new java.awt.Color(255, 253, 208));
-        jLabel1.setText("Are you sure you want to delete?");
+        jLabel1.setText("Are you sure you want to delete selected row?");
 
         jButton1.setBackground(new java.awt.Color(24, 24, 24));
         jButton1.setForeground(new java.awt.Color(255, 253, 208));
         jButton1.setText("Confirm");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ConfirmButtonPressed(evt);
+            }
+        });
 
         jButton2.setBackground(new java.awt.Color(24, 24, 24));
         jButton2.setForeground(new java.awt.Color(255, 253, 208));
         jButton2.setText("Cancel");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CancelButtonPressed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -76,7 +95,7 @@ public class DeleteConfirmation extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(134, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -92,6 +111,16 @@ public class DeleteConfirmation extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>                        
+
+    private void ConfirmButtonPressed(java.awt.event.ActionEvent evt) {                                      
+    	parent.response = true;
+    	this.dispose();
+    }                                     
+
+    private void CancelButtonPressed(java.awt.event.ActionEvent evt) {                                     
+    	parent.response = false;
+    	this.dispose();
+    }                                    
 
     /**
      * @param args the command line arguments
@@ -123,7 +152,7 @@ public class DeleteConfirmation extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new DeleteConfirmation().setVisible(true);
+                new DeleteConfirmation(null).setVisible(true);
             }
         });
     }
@@ -133,5 +162,5 @@ public class DeleteConfirmation extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
-    // End of variables declaration                   
+    // End of variables declaration         
 }

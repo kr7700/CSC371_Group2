@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.swing.ListSelectionModel;
+
 import db.MyDB;
 
 /**
@@ -20,6 +22,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
 	static MyDB db = null; //allows for easy access to database connection
 	ArrayList<bundledTuple> tupleList; //holds the list of tuples from the currently selected table
 	ArrayList<String> attributeList; //holds the list of attributes for the currently selected table
+	Boolean response = false;
 	
     /**
 	 * Default Serial ID
@@ -28,7 +31,9 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
 	/**
      * Creates new form DBDirectInterfaceGUI
      */
-    public DirectAccessDisplay_Stake() {
+    public DirectAccessDisplay_Stake() 
+    {
+    	//gets the database connection
     	try {
 			db = new MyDB();
 		} catch (Exception e) {
@@ -36,6 +41,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
 			e.printStackTrace();
 		}
     	
+    	//initializes the GUI
         try {
 			initComponents();
 		} catch (SQLException e) {
@@ -99,7 +105,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         attributeComboBox.setBackground(new java.awt.Color(24, 24, 24));
         attributeComboBox.setForeground(new java.awt.Color(255, 253, 208));
         ArrayList<String> attributeList = new ArrayList<String>();
-        PreparedStatement stmt = db.getConn().prepareStatement("SELECT * FROM " + "ADMINISTRATOR");
+        PreparedStatement stmt = db.getConn().prepareStatement("CALL getAllRows('" + tableList.get(0) + "');");
 		rs = stmt.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
@@ -110,21 +116,27 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
           attributeList.add(name);
         }
         attributeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(attributeList.toArray(new String[1])));
-        attributeComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                attributeSelected(evt);
-            }
-        });
 
         tupleScrollList.setBackground(new java.awt.Color(24, 24, 24));
         tupleScrollList.setForeground(new java.awt.Color(255, 253, 208));
         tupleScrollList.setModel(buildTupleListModel());
+        tupleScrollList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(tupleScrollList);
 
         rowAdditionTextField.setBackground(new java.awt.Color(24, 24, 24));
         rowAdditionTextField.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         rowAdditionTextField.setForeground(new java.awt.Color(255, 253, 208));
         rowAdditionTextField.setText("");
+        rowAdditionTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                try {
+					insertButtonPressed(evt);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        });
 
         jLabel1.setBackground(new java.awt.Color(24, 24, 24));
         jLabel1.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
@@ -143,6 +155,16 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         updateTextField.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         updateTextField.setForeground(new java.awt.Color(255, 253, 208));
         updateTextField.setText("");
+        updateTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                try {
+					updateButtonPressed(evt);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        });
 
         jLabel4.setBackground(new java.awt.Color(24, 24, 24));
         jLabel4.setForeground(new java.awt.Color(255, 253, 208));
@@ -171,7 +193,12 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         updateButton.setText("Apply Update");
         updateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                updateButtonPressed(evt);
+                try {
+					updateButtonPressed(evt);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 
@@ -277,8 +304,10 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         pack();
     }// </editor-fold>                        
 
+    //handles the code for new row insertions
     private void insertButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
     {      
+    	//builds initial part of statement including table values
         String stmtString = "INSERT INTO " + tableComboBox.getSelectedItem() + " (";
         for(String attribute : attributeList)
         {
@@ -287,30 +316,101 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         stmtString = stmtString.substring(0, stmtString.length() - 2);
         stmtString += ") VALUES (";
         
-		String valueString = addInsertionValues(stmtString);
+        //adds the actual values to the statement and closes it
+		String valueString = addInsertionValues();
 		if(valueString == null)
 			return;
-        
 		stmtString += valueString;
         stmtString += ");";
-        System.out.println(stmtString);
         
+        //executes the statement
+        System.out.println(stmtString);
         PreparedStatement stmt = db.getConn().prepareStatement(stmtString);
         stmt.execute();
         
         tableSelected(null); //reloads the current table to show tuple added
+        rowAdditionTextField.setText(""); //empties the text field
     }                                    
 
-    private void updateButtonPressed(java.awt.event.ActionEvent evt) {                                     
-    	// TODO add your handling code here:
+    //handles the code for updated an attribute
+    private void updateButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
+    {   
+    	//empty input box check
+    	if(updateTextField.getText() == null || updateTextField.getText().equals(""))
+    		return;
+    	
+    	//Prepares the initial section of the statement
+    	String stmtString = "UPDATE " + tableComboBox.getSelectedItem() + " SET " + attributeComboBox.getSelectedItem() + " = ";
+    	
+    	//Prepares the metadata to check is apostrophes are needed
+    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("CALL getAllRows('" + tableComboBox.getSelectedItem() + "');");
+    	ResultSet rs = tupleRetrieval.executeQuery();
+    	ResultSetMetaData rsmd = rs.getMetaData();
+    	
+    	//finds the index of the attribute column
+    	int index = 0;
+    	int counter = 1;
+    	for(String attribute : attributeList)
+    	{
+    		if (attribute.equals(attributeComboBox.getSelectedItem().toString()))
+    			index = counter;
+    		counter++;
+    	}
+    	
+    	//adds the updated value to the string
+    	if(rsmd.getColumnTypeName(index) == "VARCHAR" || rsmd.getColumnTypeName(index) == "CHAR"
+				|| rsmd.getColumnTypeName(index) == "TEXT" || rsmd.getColumnTypeName(index) == "ENUM"
+				|| rsmd.getColumnTypeName(index) == "SET")
+    		stmtString+= "'" + updateTextField.getText() + "' WHERE";
+		else
+			stmtString += updateTextField.getText() + " WHERE";
+    	
+    	//finds the target tuple
+    	bundledTuple targetTuple = findTargetTuple(tupleScrollList.getSelectedValue());
+    	if(targetTuple == null)
+        	return;
+    	
+    	//adds the conditions to the statement
+    	index = 0;
+        for(String attribute : attributeList)
+        {
+        	if (index > 0)
+        		stmtString += " AND";
+        	
+        	if(targetTuple.getDataValue(index) instanceof String)
+            	stmtString += " " + attribute + " = '" + targetTuple.getDataValue(index) + "'";
+        	else
+        		stmtString += " " + attribute + " = " + targetTuple.getDataValue(index);
+
+        	index++;
+        }
+        stmtString += ";";
+    	
+        //executes the statement
+    	System.out.println(stmtString);
+    	PreparedStatement stmt = db.getConn().prepareStatement(stmtString);
+        stmt.execute();
+        
+        tableSelected(null); //reloads the current table to show tuple updated
+        updateTextField.setText(""); //empties the text field
     }                                    
 
     private void deleteButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
-    {       
+    {      
+    	//finds the target tuple
         bundledTuple targetTuple = findTargetTuple(tupleScrollList.getSelectedValue());
         if(targetTuple == null)
         	return;
         
+        //Prompts a confirmation box
+        DeleteConfirmation confirmation = new DeleteConfirmation(this);
+        confirmation.setVisible(true);
+        if(!response)
+        	return;
+        response = false;
+        
+        
+        //creates the initial part of the statement, including the conditions
         String stmtString = "DELETE FROM " + tableComboBox.getSelectedItem() + " WHERE";
         int index = 0;
         for(String attribute : attributeList)
@@ -326,19 +426,21 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         	index++;
         }
         stmtString += ";";
-        System.out.println(stmtString);
         
+        //executes the statement
+        System.out.println(stmtString);
         PreparedStatement stmt = db.getConn().prepareStatement(stmtString);
         stmt.execute();
         
         tableSelected(null); //reloads the current table to show tuple removed
     }                                    
 
+    //handles the code for updated the display when a new table is selected
     private void tableSelected(java.awt.event.ActionEvent evt) throws SQLException 
     {  
     	//Updates the attribute drop down list
     	attributeList = new ArrayList<String>();
-        PreparedStatement stmt = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+        PreparedStatement stmt = db.getConn().prepareStatement("CALL getAllRows('" + tableComboBox.getSelectedItem() + "');");
 		ResultSet rs = stmt.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
@@ -355,11 +457,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         
         //Updates the insertion template
         templateLabel.setText(generateTemplate());
-    }                              
-
-    private void attributeSelected(java.awt.event.ActionEvent evt) {                                   
-        // TODO add your handling code here:
-    }                                  
+    }                                                               
 
     /**
      * @param args the command line arguments
@@ -367,6 +465,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
      */
     public static void main(String args[]) throws SQLException 
     {
+    	//gets a connection to the database
 		try {
 			db = new MyDB();
 		} catch (Exception e) {
@@ -433,7 +532,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     private javax.swing.AbstractListModel<String> buildTupleListModel() throws SQLException
     {
     	//creates statement to select all tuples from active table
-    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("CALL getAllRows('" + tableComboBox.getSelectedItem() + "');");
     	
     	//executes the statement and retrieves results
     	ResultSet rs = tupleRetrieval.executeQuery();
@@ -462,15 +561,21 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         };
     }
     
+    /**
+     * Generates the string used in the template label for adding new rows
+     * @return
+     * @throws SQLException
+     */
     private String generateTemplate() throws SQLException
     {
-    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+    	//prepares the metadata for the table
+    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("CALL getAllRows('" + tableComboBox.getSelectedItem() + "');");
     	ResultSet rs = tupleRetrieval.executeQuery();
     	ResultSetMetaData rsmd = rs.getMetaData();
     	int numColumns = rsmd.getColumnCount();
     	
+    	//builds the String
     	String concatString = "";
-    	
     	for(int i = 1; i <= numColumns; i++)
     	{
     		concatString += "[" + rsmd.getColumnName(i) + "]";
@@ -483,6 +588,11 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     	return concatString;
     }
     
+    /**
+     * Finds the object associated with the tuple selected in the list
+     * @param tupleString
+     * @return
+     */
     private bundledTuple findTargetTuple(String tupleString)
     {
     	for(bundledTuple tuple : tupleList)
@@ -490,11 +600,20 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     		if (tuple.toString().equals(tupleString))
     			return tuple;
     	}
+    	
+    	//if tuple is not found, return null
     	return null;
     }
     
-    private String addInsertionValues(String stmt) throws SQLException
+    /**
+     * returns a String with the actual values to be added, formated properly with apostrophes
+     * and commas in the correct locations
+     * @return
+     * @throws SQLException
+     */
+    private String addInsertionValues() throws SQLException
     {
+    	//gets the list of values, splits it into an array, makes sure it isn't empty, and formats
     	String temp = rowAdditionTextField.getText();
     	String[] values = temp.split(",");
     	if(values.length != attributeList.size())
@@ -505,10 +624,12 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     		values[i] = values[i].trim();
     	temp = "";
     	
-    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+    	//prepares the metadata for the table
+    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("CALL getAllRows('" + tableComboBox.getSelectedItem() + "');");
     	ResultSet rs = tupleRetrieval.executeQuery();
     	ResultSetMetaData rsmd = rs.getMetaData();
-    	System.out.println(rsmd.getColumnTypeName(1));
+    	
+    	//adds the values into a single string with correct formatting
     	int index = 1;
     	for(String str : values)
     	{
@@ -520,6 +641,8 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     			temp += str + ", ";
     	}
     	temp = temp.substring(0, temp.length() - 2);
+    	
+    	//returns the string
     	return temp;
     }
 }
