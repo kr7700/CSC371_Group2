@@ -124,6 +124,16 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         rowAdditionTextField.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         rowAdditionTextField.setForeground(new java.awt.Color(255, 253, 208));
         rowAdditionTextField.setText("");
+        rowAdditionTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                try {
+					insertButtonPressed(evt);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        });
 
         jLabel1.setBackground(new java.awt.Color(24, 24, 24));
         jLabel1.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
@@ -142,6 +152,16 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         updateTextField.setFont(new java.awt.Font("Copperplate Gothic Bold", 0, 18)); // NOI18N
         updateTextField.setForeground(new java.awt.Color(255, 253, 208));
         updateTextField.setText("");
+        updateTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                try {
+					updateButtonPressed(evt);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        });
 
         jLabel4.setBackground(new java.awt.Color(24, 24, 24));
         jLabel4.setForeground(new java.awt.Color(255, 253, 208));
