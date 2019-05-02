@@ -171,7 +171,12 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         updateButton.setText("Apply Update");
         updateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                updateButtonPressed(evt);
+                try {
+					updateButtonPressed(evt);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 
@@ -299,10 +304,67 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
         stmt.execute();
         
         tableSelected(null); //reloads the current table to show tuple added
+        rowAdditionTextField.setText("");
     }                                    
 
-    private void updateButtonPressed(java.awt.event.ActionEvent evt) {                                     
-    	// TODO add your handling code here:
+    private void updateButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
+    {   
+    	//empty input box check
+    	if(updateTextField.getText() == null || updateTextField.getText().equals(""))
+    		return;
+    	
+    	//Prepares the initial section of the statement
+    	String stmtString = "UPDATE " + tableComboBox.getSelectedItem() + " SET " + attributeComboBox.getSelectedItem() + " = ";
+    	
+    	//Prepares the metadata to check is apostrophes are needed
+    	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
+    	ResultSet rs = tupleRetrieval.executeQuery();
+    	ResultSetMetaData rsmd = rs.getMetaData();
+    	
+    	//finds the index of the attribute column
+    	int index = 0;
+    	int counter = 1;
+    	for(String attribute : attributeList)
+    	{
+    		if (attribute.equals(attributeComboBox.getSelectedItem().toString()))
+    			index = counter;
+    		counter++;
+    	}
+    	
+    	//adds the updated value to the string
+    	if(rsmd.getColumnTypeName(index) == "VARCHAR" || rsmd.getColumnTypeName(index) == "CHAR"
+				|| rsmd.getColumnTypeName(index) == "TEXT" || rsmd.getColumnTypeName(index) == "ENUM"
+				|| rsmd.getColumnTypeName(index) == "SET")
+    		stmtString+= "'" + updateTextField.getText() + "' WHERE";
+		else
+			stmtString += updateTextField.getText() + " WHERE";
+    	
+    	//finds the target tuple and applys conditions to statement
+    	bundledTuple targetTuple = findTargetTuple(tupleScrollList.getSelectedValue());
+    	if(targetTuple == null)
+        	return;
+    	
+    	index = 0;
+        for(String attribute : attributeList)
+        {
+        	if (index > 0)
+        		stmtString += " AND";
+        	
+        	if(targetTuple.getDataValue(index) instanceof String)
+            	stmtString += " " + attribute + " = '" + targetTuple.getDataValue(index) + "'";
+        	else
+        		stmtString += " " + attribute + " = " + targetTuple.getDataValue(index);
+
+        	index++;
+        }
+        stmtString += ";";
+    	
+    	System.out.println(stmtString);
+    	PreparedStatement stmt = db.getConn().prepareStatement(stmtString);
+        stmt.execute();
+        
+        tableSelected(null); //reloads the current table to show tuple updated
+        updateTextField.setText(""); //empties the text field
     }                                    
 
     private void deleteButtonPressed(java.awt.event.ActionEvent evt) throws SQLException 
@@ -508,7 +570,7 @@ public class DirectAccessDisplay_Stake extends javax.swing.JFrame
     	PreparedStatement tupleRetrieval = db.getConn().prepareStatement("SELECT * FROM " + tableComboBox.getSelectedItem());
     	ResultSet rs = tupleRetrieval.executeQuery();
     	ResultSetMetaData rsmd = rs.getMetaData();
-    	System.out.println(rsmd.getColumnTypeName(1));
+    	
     	int index = 1;
     	for(String str : values)
     	{
